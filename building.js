@@ -46,11 +46,14 @@ class Skyline {
         noStroke();
         var elevation = (height * 0.5) / 4;
         var params = {
+            'primary_mass': true,
+            'add_secondary': random([true, false]),
             'accent_shape': random(['dome', 'triangle', 'quadrilateral']),
             'levels': 5,
             'roof_overhang': random(0, 4),
             'roof_masses': random([1, 2]) * 2 - 1,
             'dome_start': random(3 * PI / 4, PI),
+            'quad_ratio': random(1, 2),
             'level_height': 30,
             'fill_color': color('#2F4260'),
             'spire_height': random(0, 8),
@@ -76,14 +79,41 @@ class Skyline {
     }
 
     landmark(x, y, params) {
-        // rectangle with shape accents
-        if (params.width < 30 || params.levels == 0) {
+        // large, complicated building
+        if (params.recursed && (params.width < 30 || params.levels == 0)) {
             //stop recusion
             return;
         }
-        // masses can be one exterior with many floors or, if there
-        // aren't too many floors, stacked masses
 
+        // connecting element for secondary masses needs to be at the back
+        if (params.primary_mass && params.add_secondary) {
+            // additional masses
+            var mass_params = Object.assign({}, params);
+            mass_params.level_recursion = 0;
+            mass_params.width = 150 * random(0.05, 0.3);
+            mass_params.width_decrement *= 0.01;
+            mass_params.roof_masses = 1;
+            mass_params.roof_overhang *= 0.5;
+            mass_params.roof_peak *= 0.5;
+            mass_params.primary_mass = false;
+            mass_params.level_height *= random(0.3, 1.5);
+
+            var distance = random([-2, params.width * random(0.01, 0.2)]);
+            // add connecting element
+            push();
+            fill(params.fill_color);
+            beginShape()
+            var connector_height = (mass_params.width / 20) * params.level_height;
+            vertex(x - mass_params.width - distance, y);
+            vertex(x - mass_params.width - distance, y - connector_height);
+            vertex(x + params.width + mass_params.width + distance, y - connector_height);
+            vertex(x + params.width + mass_params.width + distance, y);
+            endShape(close);
+            pop();
+        }
+
+
+        // levels
         fill(params.fill_color);
         for (var l = 0; l < params.levels; l++) {
             beginShape();
@@ -106,6 +136,8 @@ class Skyline {
 
             }
         }
+
+        // recursive sub-structures
         for (var l = params.levels - 2; l >= 0; l--) {
             if (l % params.level_recursion == 0) {
                 var new_params = Object.assign({}, params);
@@ -116,6 +148,8 @@ class Skyline {
                 new_params.width = (params.width - (l * params.width_decrement)) / 3;
                 new_params.fill_color = lerpColor(params.fill_color, white, 0.1);
                 new_params.spire_height *= 0.6;
+                new_params.recursed = true;
+                new_params.primary_mass = false;
                 push();
                 this.landmark(x + (l * params.width_decrement),
                               y - (l * params.level_height),
@@ -126,13 +160,18 @@ class Skyline {
                               y - (l * params.level_height),
                               new_params);
                 if (l > 0 && params.width_decrement > 0) {
-                    pop();
-                    push()
+                    push();
                     fill(lerpColor(params.fill_color, black, 0.2));
                     this.roof(x, y, l-1, params);
-                    pop()
+                    pop();
                 }
             }
+        }
+
+        if (params.primary_mass && params.add_secondary) {
+            // additional masses
+            this.landmark(x - mass_params.width - distance, y, mass_params);
+            this.landmark(x + params.width + distance, y, mass_params);
         }
     }
 
@@ -160,7 +199,7 @@ class Skyline {
             } else if (params.accent_shape == 'triangle') {
                 this.triangle(rx + offset, y - peak_height, roof_width / 2);
             } else if (params.accent_shape == 'quadrilateral') {
-                this.quadrilateral(rx + offset, y - peak_height, roof_width / 2, roof_width / 4, roof_width / 2);
+                this.quadrilateral(rx + offset, y - peak_height, roof_width / 2, roof_width / 4, roof_width / (2 * params.quad_ratio));
             }
             endShape(CLOSE);
 
