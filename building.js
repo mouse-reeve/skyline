@@ -46,16 +46,17 @@ class Skyline {
         noStroke();
         var elevation = (height * 0.5) / 4;
         var params = {
-            'accent_shape': random(['dome', 'triangle']),
+            'accent_shape': random(['dome', 'triangle', 'quadrilateral']),
             'levels': 5,
             'roof_overhang': random(0, 4),
             'roof_masses': random([1, 2]) * 2 - 1,
             'dome_start': random(3 * PI / 4, PI),
             'level_height': 30,
-            'width': 150,
             'fill_color': color('#2F4260'),
+            'spire_height': random(0, 8),
         }
         params.width_decrement = (150 - (150 / random([1, 1.5, 2]))) / (params.levels + 1);
+        params.width = params.width_decrement > 0 ? 150 : 60;
         params.level_recursion = params.width_decrement < 0.2 ? 0 : 2;
         params.roof_peak = params.width_decrement < 0.2 ? 0 : Math.floor(random(-1, 5));
         params.roof_lift = params.roof_peak == 0 && params.width_decrement != 0 ? random([0, 1]) : 0;
@@ -114,6 +115,7 @@ class Skyline {
                 new_params.level_height *= 0.8;
                 new_params.width = (params.width - (l * params.width_decrement)) / 3;
                 new_params.fill_color = lerpColor(params.fill_color, white, 0.1);
+                new_params.spire_height *= 0.6;
                 push();
                 this.landmark(x + (l * params.width_decrement),
                               y - (l * params.level_height),
@@ -140,9 +142,9 @@ class Skyline {
         var peak_width = params.width - ((params.levels - 1) * 2 * params.width_decrement);
         var center = Math.floor(params.roof_masses / 2);
 
-        beginShape();
         var rx = x + ((params.levels - 1) * params.width_decrement);
         for (var i = 0; i < params.roof_masses; i ++) {
+            beginShape();
             var scale = center - i;
 
             var roof_width = ((params.roof_masses - Math.abs(scale)) * 0.5) ** 1.7 * peak_width / params.roof_masses;
@@ -157,9 +159,16 @@ class Skyline {
                 this.dome(rx + offset, y - peak_height, roof_width / 2, 100, params.dome_start);
             } else if (params.accent_shape == 'triangle') {
                 this.triangle(rx + offset, y - peak_height, roof_width / 2);
+            } else if (params.accent_shape == 'quadrilateral') {
+                this.quadrilateral(rx + offset, y - peak_height, roof_width / 2, roof_width / 4, roof_width / 2);
             }
+            endShape(CLOSE);
+
+            // spire
+            beginShape();
+            this.triangle(rx + offset, y - peak_height, roof_width / 10, roof_width + params.spire_height);
+            endShape(CLOSE);
         }
-        endShape(CLOSE);
     }
 
     roof(x, y, l, params) {
@@ -188,9 +197,17 @@ class Skyline {
         }
     }
 
-    triangle(x, y, base) {
+    triangle(x, y, base, t_height) {
+        t_height = t_height || base;
         vertex(x - base, y);
-        vertex(x, y - base);
+        vertex(x, y - t_height);
+        vertex(x + base, y);
+    }
+
+    quadrilateral(x, y, base, qheight, min_width) {
+        vertex(x - base, y);
+        vertex(x - min_width, y - qheight);
+        vertex(x + min_width, y - qheight);
         vertex(x + base, y);
     }
 
