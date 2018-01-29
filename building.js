@@ -142,26 +142,21 @@ class Skyline {
 
         beginShape();
         var rx = x + ((params.levels - 1) * params.width_decrement);
-        if (params.roof_masses > 1) {
-            for (var i = 0; i < params.roof_masses; i ++) {
-                var scale = center - i;
+        for (var i = 0; i < params.roof_masses; i ++) {
+            var scale = center - i;
 
-                var roof_width = ((params.roof_masses - Math.abs(scale)) * 0.5) ** 1.7 * peak_width / params.roof_masses;
-                var offset = i * (peak_width / (params.roof_masses - 1));
-                if (scale != 0) {
-                     offset += roof_width / (scale * 2);
-                }
-                if (params.accent_shape == 'dome') {
-                    this.dome(rx + offset, y - peak_height, roof_width / 2, 100, params.dome_start);
-                } else if (params.accent_shape == 'triangle') {
-                    this.triangle(rx + offset, y - peak_height, roof_width / 2);
-                }
+            var roof_width = ((params.roof_masses - Math.abs(scale)) * 0.5) ** 1.7 * peak_width / params.roof_masses;
+            var offset = i * (peak_width / (params.roof_masses - 1));
+            if (params.roof_masses == 1) {
+                offset = peak_width / 2;
+                roof_width = peak_width;
+            } else if (scale != 0) {
+                 offset += roof_width / (scale * 2);
             }
-        } else {
             if (params.accent_shape == 'dome') {
-                this.dome(x + params.width / 2, y - peak_height, peak_width / 2, 100, params.dome_start);
+                this.dome(rx + offset, y - peak_height, roof_width / 2, 100, params.dome_start);
             } else if (params.accent_shape == 'triangle') {
-                this.triangle(rx + (peak_width / 2), y - peak_height, peak_width / 2);
+                this.triangle(rx + offset, y - peak_height, roof_width / 2);
             }
         }
         endShape(CLOSE);
