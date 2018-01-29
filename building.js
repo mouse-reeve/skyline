@@ -3,7 +3,7 @@ var white;
 
 function setup() {
     var container = document.getElementById('skyline');
-    var canvas = createCanvas(600, 400);
+    var canvas = createCanvas(1165, 600);
     canvas.parent(container);
 
     var seed = container.getAttribute('data-seed');
@@ -25,15 +25,18 @@ class Skyline {
     }
 
     draw_skyline() {
-        background('#A8C4D0');
-        this.add_sky('icy');
+        this.add_sky();
+        this.add_ocean();
+        this.add_buildings();
+    }
 
+    add_buildings() {
         // place a landmark 1/4 in and scale down around it
         push();
         noStroke();
         fill('#162137');
         for (var i = 0; i < width; i+=40) {
-            var h = (height * 0.3) - Math.abs(i - (width / 4)) * 0.18;
+            var h = Math.abs((height * 0.25) - Math.abs(i - (width / 4)) * 0.18);
             var elevation = h / 4;
             this.building(i, this.horizon - elevation, random(h - 5, h + 5), 40);
         }
@@ -180,11 +183,11 @@ class Skyline {
         }
     }
 
-    add_sky(pallette) {
+    add_sky() {
         // pixel gradients
         push();
-        pallette = [
-            '#A5C2D2', '#9ABED4', '#536788', '#B9CCD2', '#6BA5CD',
+        var pallette = [
+            '#A5C2D2', '#9ABED4', '#536788', '#B9CCD2', '#6BA5CD', '#9ABDD3', '#CED6D8',
             '#F2D9C5', '#BCABA3', '#A395A4']
         var colors = [];
         for (var c = 0; c < random(3, 6); c++) {
@@ -193,7 +196,6 @@ class Skyline {
 
         var bucket_size = this.horizon / colors.length + (this.horizon / (colors.length ** 1.7));
         for (var y = 0; y < this.horizon; y++) {
-
             for (var x = 0; x < width; x++) {
                 var bucket = Math.floor((y / bucket_size) + (x * 0.0002));
                 var distance = y - (bucket * bucket_size) + (x * 0.02);
@@ -213,5 +215,39 @@ class Skyline {
         pop()
     }
 
+    add_ocean() {
+        var pallette = ['#ACBAC7', '#808E9B', '#8F9DAA', '#9EABBB'];
+
+        push();
+        noStroke();
+        fill(pallette[0]);
+        beginShape();
+        vertex(0, height);
+        vertex(0, this.horizon);
+        vertex(width, this.horizon);
+        vertex(width, height);
+        endShape(CLOSE);
+        pop();
+
+        for (var x = 0; x < width; x+=15) {
+            for (var y = this.horizon; y < height; y+=5) {
+                if (random() > 0.1) {
+                    push();
+                    noStroke();
+                    fill(random(pallette.slice(1)));
+                    var length = random(30, 150);
+
+                    beginShape();
+                    vertex(x, y);
+                    vertex(x, y + 1);
+                    vertex(x + (length / 2), y + random(3, 5));
+                    vertex(x + length, y + 1);
+                    vertex(x + length, y);
+                    endShape(CLOSE);
+                    pop();
+                }
+            }
+        }
+    }
 }
 
