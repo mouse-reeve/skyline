@@ -32,22 +32,21 @@ class Skyline {
         fill('#162137');
         this.add_sky('icy');
         // place a landmark 1/4 in and scale down around it
-        for (var i = 0; i < width; i+=50) {
+        /*for (var i = 0; i < width; i+=50) {
             var h = (height * 0.3) - Math.abs(i - (width / 4)) * 0.2;
             var elevation = h / 4;
             this.building(i, this.horizon - elevation, h, 50);
-        }
+        }*/
         var elevation = (height * 0.4) / 4;
-        this.building(width / 4, this.horizon - elevation, height * 0.5, 50);
-        pop();
+        this.landmark(width / 4, this.horizon - elevation);
 
-        push();
+        /*push();
         for (var i = 0; i < width; i+=50) {
             var h = (height * 0.2) - Math.abs(i - (width / 3)) * 0.1;
             var elevation = h / 7;
             this.building(i, this.horizon + elevation, h, 50);
         }
-        pop()
+        pop()*/
     }
 
     add_sky(pallette) {
@@ -81,6 +80,46 @@ class Skyline {
             }
         }
         pop()
+    }
+
+    landmark(x, y) {
+        // rectangle with shape accents
+        var rwidth = random(width / 8, width / 4);
+        var levels = 5;
+        // masses can be one exterior with many floors or, if there
+        // aren't too many floors, stacked masses
+        var min_width = rwidth / 2;
+        var width_decrement = min_width / (levels + 1);
+
+        var roof_overhang = 3;
+        var roof_lift = 1;
+
+        var level_height = 20;
+        for (var l = 0; l < levels; l++) {
+            beginShape();
+            vertex(x + (l * width_decrement), y - (l * level_height));
+            vertex(x + (l * width_decrement), y - ((l + 1) * level_height));
+            vertex(x + rwidth - (l * width_decrement), y - ((l + 1) * level_height));
+            vertex(x + rwidth - (l * width_decrement), y - (l * level_height));
+            endShape(CLOSE);
+
+            beginShape();
+            vertex(x + (l * width_decrement) - roof_overhang, y - ((l + 1) * level_height) - roof_lift);
+            vertex(x + (l * width_decrement) - roof_overhang, y - ((l + 1) * level_height) - (roof_lift + 2));
+            vertex(x + rwidth - (l * width_decrement) + roof_overhang, y - ((l + 1) * level_height) - (roof_lift + 2));
+            vertex(x + rwidth - (l * width_decrement) + roof_overhang, y - ((l + 1) * level_height) - roof_lift);
+
+            endShape(CLOSE);
+        }
+
+        var peak_height = level_height * levels;
+        var peak_width = rwidth - ((levels - 1) * width_decrement);
+
+        // fancy top roof
+        ellipse(x + rwidth / 2, y - peak_height, (peak_width / 2));
+
+
+        // add side structures
     }
 
     building(x, y, rheight, rwidth) {
