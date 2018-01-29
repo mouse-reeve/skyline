@@ -56,8 +56,8 @@ class Skyline {
             'quad_ratio': random(1, 2),
             'level_height': 30,
             'fill_color': color('#2F4260'),
-            'spire_height': random(0, 8),
         }
+        params.spire_height = params.accent_shape == 'quadrilateral' ? random([0, random(0, 15)]) : random(3, 20);
         params.width_decrement = (150 - (150 / random([1, 1.5, 2]))) / (params.levels + 1);
         params.width = params.width_decrement > 0 ? 150 : 60;
         params.level_recursion = params.width_decrement < 0.2 ? 0 : 2;
@@ -204,9 +204,11 @@ class Skyline {
             endShape(CLOSE);
 
             // spire
-            beginShape();
-            this.triangle(rx + offset, y - peak_height, roof_width / 10, roof_width + params.spire_height);
-            endShape(CLOSE);
+            if (params.spire_height) {
+                beginShape();
+                this.triangle(rx + offset, y - peak_height, roof_width / 10, (roof_width / 2) + params.spire_height);
+                endShape(CLOSE);
+            }
         }
     }
 
