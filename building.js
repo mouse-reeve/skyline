@@ -232,15 +232,17 @@ class Skyline {
         for (var x = 0; x < width; x+=15) {
             for (var y = this.horizon; y < height; y+=5) {
                 if (random() > 0.1) {
+                    var scale = 9 / ((height - y) ** 0.5);
                     push();
                     noStroke();
                     fill(random(pallette.slice(1)));
-                    var length = random(30, 150);
+                    var length = scale * random(30, 150);
+                    var wave_height = (scale) * random(3, 6);
 
                     beginShape();
                     vertex(x, y);
                     vertex(x, y + 1);
-                    vertex(x + (length / 2), y + random(3, 5));
+                    vertex(x + (length / 2), y + wave_height);
                     vertex(x + length, y + 1);
                     vertex(x + length, y);
                     endShape(CLOSE);
