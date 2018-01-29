@@ -53,6 +53,7 @@ class Skyline {
             'level_height': 30,
             'width': 150,
             'fill_color': color('#2F4260'),
+            'accent_polygon': 100,
         }
         params.width_decrement = (150 - (150 / random([1, 1.5, 2]))) / (params.levels + 1);
         params.level_recursion = params.width_decrement < 0.2 ? 0 : 2;
@@ -92,28 +93,7 @@ class Skyline {
             endShape(CLOSE);
         }
 
-        // fancy top roof
-        var peak_height = params.level_height * params.levels;
-        var peak_width = params.width - ((params.levels - 1) * 2 * params.width_decrement);
-        var center = Math.floor(params.roof_masses / 2);
-
-        beginShape();
-        if (params.roof_masses > 1) {
-            var rx = x + ((params.levels - 1) * params.width_decrement);
-            for (var i = 0; i < params.roof_masses; i ++) {
-                var scale = center - i;
-
-                var roof_width = ((params.roof_masses - Math.abs(scale)) * 0.5) ** 1.7 * peak_width / params.roof_masses;
-                var offset = i * (peak_width / (params.roof_masses - 1));
-                if (scale != 0) {
-                     offset += (roof_width / (scale * 2));
-                }
-                this.dome(rx + offset, y - peak_height, roof_width / 2, 100, params.dome_start);
-            }
-        } else {
-            this.dome(x + params.width / 2, y - peak_height, (peak_width / 2), 100, params.dome_start);
-        }
-        endShape(CLOSE);
+        this.fancy_roof(x, y, params);
 
         // level roofing
         if (params.width_decrement > 0) {
@@ -152,6 +132,31 @@ class Skyline {
                 }
             }
         }
+    }
+
+    fancy_roof(x, y, params) {
+        // fancy top roof
+        var peak_height = params.level_height * params.levels;
+        var peak_width = params.width - ((params.levels - 1) * 2 * params.width_decrement);
+        var center = Math.floor(params.roof_masses / 2);
+
+        beginShape();
+        if (params.roof_masses > 1) {
+            var rx = x + ((params.levels - 1) * params.width_decrement);
+            for (var i = 0; i < params.roof_masses; i ++) {
+                var scale = center - i;
+
+                var roof_width = ((params.roof_masses - Math.abs(scale)) * 0.5) ** 1.7 * peak_width / params.roof_masses;
+                var offset = i * (peak_width / (params.roof_masses - 1));
+                if (scale != 0) {
+                     offset += (roof_width / (scale * 2));
+                }
+                this.dome(rx + offset, y - peak_height, roof_width / 2, params.accent_polygon, params.dome_start);
+            }
+        } else {
+            this.dome(x + params.width / 2, y - peak_height, (peak_width / 2), params.accent_polygon, params.dome_start);
+        }
+        endShape(CLOSE);
     }
 
     roof(x, y, l, params) {
