@@ -55,7 +55,7 @@ class Skyline {
         params.roof_peak = params.width_decrement < 0.2 ? 0 : Math.floor(random(-1, 5));
         params.roof_lift = params.roof_peak == 0 && params.width_decrement != 0 ? random([0, 1]) : 0;
 
-        this.landmark(width / 4, this.horizon - elevation, params);
+        this.landmark(width / 4 - (params.width / 2), this.horizon - elevation, params);
         pop()
 
         push();
