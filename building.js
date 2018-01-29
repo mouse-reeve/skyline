@@ -46,6 +46,7 @@ class Skyline {
         noStroke();
         var elevation = (height * 0.5) / 4;
         var params = {
+            'accent_shape': random(['dome', 'triangle']),
             'levels': 5,
             'roof_overhang': random(0, 4),
             'roof_masses': random([1, 2]) * 2 - 1,
@@ -53,7 +54,6 @@ class Skyline {
             'level_height': 30,
             'width': 150,
             'fill_color': color('#2F4260'),
-            'accent_polygon': 100,
         }
         params.width_decrement = (150 - (150 / random([1, 1.5, 2]))) / (params.levels + 1);
         params.level_recursion = params.width_decrement < 0.2 ? 0 : 2;
@@ -141,20 +141,28 @@ class Skyline {
         var center = Math.floor(params.roof_masses / 2);
 
         beginShape();
+        var rx = x + ((params.levels - 1) * params.width_decrement);
         if (params.roof_masses > 1) {
-            var rx = x + ((params.levels - 1) * params.width_decrement);
             for (var i = 0; i < params.roof_masses; i ++) {
                 var scale = center - i;
 
                 var roof_width = ((params.roof_masses - Math.abs(scale)) * 0.5) ** 1.7 * peak_width / params.roof_masses;
                 var offset = i * (peak_width / (params.roof_masses - 1));
                 if (scale != 0) {
-                     offset += (roof_width / (scale * 2));
+                     offset += roof_width / (scale * 2);
                 }
-                this.dome(rx + offset, y - peak_height, roof_width / 2, params.accent_polygon, params.dome_start);
+                if (params.accent_shape == 'dome') {
+                    this.dome(rx + offset, y - peak_height, roof_width / 2, 100, params.dome_start);
+                } else if (params.accent_shape == 'triangle') {
+                    this.triangle(rx + offset, y - peak_height, roof_width / 2);
+                }
             }
         } else {
-            this.dome(x + params.width / 2, y - peak_height, (peak_width / 2), params.accent_polygon, params.dome_start);
+            if (params.accent_shape == 'dome') {
+                this.dome(x + params.width / 2, y - peak_height, peak_width / 2, 100, params.dome_start);
+            } else if (params.accent_shape == 'triangle') {
+                this.triangle(rx + (peak_width / 2), y - peak_height, peak_width / 2);
+            }
         }
         endShape(CLOSE);
     }
@@ -183,6 +191,12 @@ class Skyline {
             var sy = y + (sin(a) * radius) - y_offset;
             vertex(sx, sy);
         }
+    }
+
+    triangle(x, y, base) {
+        vertex(x - base, y);
+        vertex(x, y - base);
+        vertex(x + base, y);
     }
 
 
