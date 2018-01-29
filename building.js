@@ -48,6 +48,7 @@ class Skyline {
         var params = {
             'levels': 5,
             'roof_overhang': random(0, 4),
+            'roof_masses': random([1, 2]) * 2 - 1,
             'dome_start': random(3 * PI / 4, PI),
             'level_height': 30,
             'width': 150,
@@ -94,9 +95,24 @@ class Skyline {
         // fancy top roof
         var peak_height = params.level_height * params.levels;
         var peak_width = params.width - ((params.levels - 1) * 2 * params.width_decrement);
+        var center = Math.floor(params.roof_masses / 2);
 
         beginShape();
-        this.dome(x + params.width / 2, y - peak_height, (peak_width / 2), 100, params.dome_start);
+        if (params.roof_masses > 1) {
+            var rx = x + ((params.levels - 1) * params.width_decrement);
+            for (var i = 0; i < params.roof_masses; i ++) {
+                var scale = center - i;
+
+                var roof_width = ((params.roof_masses - Math.abs(scale)) * 0.5) ** 1.7 * peak_width / params.roof_masses;
+                var offset = i * (peak_width / (params.roof_masses - 1));
+                if (scale != 0) {
+                     offset += (roof_width / (scale * 2));
+                }
+                this.dome(rx + offset, y - peak_height, roof_width / 2, 100, params.dome_start);
+            }
+        } else {
+            this.dome(x + params.width / 2, y - peak_height, (peak_width / 2), 100, params.dome_start);
+        }
         endShape(CLOSE);
 
         // level roofing
