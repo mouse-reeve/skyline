@@ -33,13 +33,14 @@ class Skyline {
     add_buildings() {
         // place a building 1/4 in and scale down around it
 
+        var pallette = ['#162137'];//, '#1E293D'];
         var secondary_shape = random(['dome', 'triangle', 'quadrilateral']);
-        this.building_row(4, secondary_shape, ['#162137']);
+        this.building_row(4, secondary_shape, pallette);
 
         // Landmark
         push();
         noStroke();
-        var elevation = (height * 0.5) / 3;
+        var elevation = (height * 0.5) / 3.5;
         var params = {
             'primary_mass': true,
             'add_secondary': random([true, false]),
@@ -63,9 +64,9 @@ class Skyline {
         this.building(width / 4 - (params.width / 2), this.horizon - elevation, params, secondary_shape);
         pop()
 
-        this.building_row(2, secondary_shape, ['#162137']);
-        this.building_row(1, secondary_shape, ['#1E293D']);
-        this.building_row(0, secondary_shape, ['#1E293D']);
+        this.building_row(2, secondary_shape, pallette);
+        this.building_row(1, secondary_shape, pallette);
+        this.building_row(0, secondary_shape, pallette);
     }
 
     building_row(layer, secondary_shape, pallette) {
@@ -73,30 +74,33 @@ class Skyline {
         noStroke();
         var slope = 0.05 + (layer / 50);
         var base_height = (0.75 * width) * slope + 10
-        for (var i = 0; i < width; i+=building_width) {
+
+        var fill_color = lerpColor(color(random(pallette)), white, 0.03 * layer);
+        for (var i = 0; i < width; i+=building_width - 1) {
             var h = base_height - (Math.abs(i - (width / 4)) * slope);
             var elevation = layer * 10;
-            var building_width = 30 + layer ** 2;
-            this.simple_building(i, this.horizon + h / 10, elevation + random(h - 5, h + 5), building_width, color(pallette[0]), secondary_shape);
+            var building_width = random(25, 35) + layer ** 2;
+            this.simple_building(i, this.horizon + h / 8, elevation + random(h - 5, h + 5), building_width, fill_color, secondary_shape);
         }
         pop()
     }
 
     simple_building(x, y, b_height, b_width, fill_color, secondary_shape) {
+        var dome_start = secondary_shape == 'dome' ? random(5 * PI / 6, PI) : PI
         var params = {
             'primary_mass': true,
             'add_secondary': false,
             'accent_shape': random([secondary_shape, secondary_shape, secondary_shape, 'dome', 'triangle', 'quadrilateral']),
-            'fancy_roof': random() > 0.7,
+            'fancy_roof': random() > 0.6,
             'roof_overhang': random(0, 4),
-            'roof_masses': random([1, 2]) * 2 - 1,
-            'dome_start': random(3 * PI / 4, PI),
+            'roof_masses': random([1, 1, 1, 2]) * 2 - 1,
+            'dome_start': dome_start,
             'quad_ratio': random(1, 2),
             'level_height': b_height,
             'levels': 1,
             'fill_color': lerpColor(fill_color, black, random(0, 0.1)),
         }
-        params.spire_height = params.accent_shape == 'quadrilateral' ? random([0, random(0, 15)]) : random(3, 20);
+        params.spire_height = params.accent_shape == 'quadrilateral' ? random([0, random(0, 7)]) : random(3, 10);
         params.width_decrement = 0;
         params.width = b_width;
         params.level_recursion = false,
