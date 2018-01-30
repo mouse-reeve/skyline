@@ -31,25 +31,21 @@ class Skyline {
     }
 
     add_buildings() {
-        // place a landmark 1/4 in and scale down around it
-        push();
-        noStroke();
-        fill('#162137');
-        for (var i = 0; i < width; i+=40) {
-            var h = Math.abs((height * 0.25) - Math.abs(i - (width / 4)) * 0.18);
-            var elevation = h / 4;
-            this.building(i, this.horizon - elevation, random(h - 5, h + 5), 40);
-        }
-        pop();
+        // place a building 1/4 in and scale down around it
 
+        var secondary_shape = random(['dome', 'triangle', 'quadrilateral']);
+        this.building_row(4, secondary_shape, ['#162137']);
+
+        // Landmark
         push();
         noStroke();
-        var elevation = (height * 0.5) / 4;
+        var elevation = (height * 0.5) / 3;
         var params = {
             'primary_mass': true,
             'add_secondary': random([true, false]),
-            'accent_shape': random(['dome', 'triangle', 'quadrilateral']),
+            'accent_shape': secondary_shape,
             'levels': 5,
+            'fancy_roof': true,
             'roof_overhang': random(0, 4),
             'roof_masses': random([1, 2]) * 2 - 1,
             'dome_start': random(3 * PI / 4, PI),
@@ -64,21 +60,53 @@ class Skyline {
         params.roof_peak = params.width_decrement < 0.2 ? 0 : Math.floor(random(-1, 5));
         params.roof_lift = params.roof_peak == 0 && params.width_decrement != 0 ? random([0, 1]) : 0;
 
-        this.landmark(width / 4 - (params.width / 2), this.horizon - elevation, params);
+        this.building(width / 4 - (params.width / 2), this.horizon - elevation, params, secondary_shape);
         pop()
 
+        this.building_row(2, secondary_shape, ['#162137']);
+        this.building_row(1, secondary_shape, ['#1E293D']);
+        this.building_row(0, secondary_shape, ['#1E293D']);
+    }
+
+    building_row(layer, secondary_shape, pallette) {
         push();
         noStroke();
-        fill('#1E293D');
-        for (var i = 0; i < width; i+=20) {
-            var h = (height * 0.2) - Math.abs(i - (width / 3.2)) * 0.1;
-            var elevation = h / 7;
-            this.building(i, this.horizon + elevation, random(h - 5, h + 5), 30);
+        var slope = 0.05 + (layer / 50);
+        var base_height = (0.75 * width) * slope + 10
+        for (var i = 0; i < width; i+=building_width) {
+            var h = base_height - (Math.abs(i - (width / 4)) * slope);
+            var elevation = layer * 10;
+            var building_width = 30 + layer ** 2;
+            this.simple_building(i, this.horizon + h / 10, elevation + random(h - 5, h + 5), building_width, color(pallette[0]), secondary_shape);
         }
         pop()
     }
 
-    landmark(x, y, params) {
+    simple_building(x, y, b_height, b_width, fill_color, secondary_shape) {
+        var params = {
+            'primary_mass': true,
+            'add_secondary': false,
+            'accent_shape': random([secondary_shape, secondary_shape, secondary_shape, 'dome', 'triangle', 'quadrilateral']),
+            'fancy_roof': random() > 0.7,
+            'roof_overhang': random(0, 4),
+            'roof_masses': random([1, 2]) * 2 - 1,
+            'dome_start': random(3 * PI / 4, PI),
+            'quad_ratio': random(1, 2),
+            'level_height': b_height,
+            'levels': 1,
+            'fill_color': lerpColor(fill_color, black, random(0, 0.1)),
+        }
+        params.spire_height = params.accent_shape == 'quadrilateral' ? random([0, random(0, 15)]) : random(3, 20);
+        params.width_decrement = 0;
+        params.width = b_width;
+        params.level_recursion = false,
+        params.roof_peak = params.width_decrement < 0.2 ? 0 : Math.floor(random(-1, 5));
+        params.roof_lift = params.roof_peak == 0 && params.width_decrement != 0 ? random([0, 1]) : 0;
+
+        this.building(x, y, params);
+    }
+
+    building(x, y, params) {
         // large, complicated building
         if (params.recursed && (params.width < 30 || params.levels == 0)) {
             //stop recusion
@@ -124,7 +152,9 @@ class Skyline {
             endShape(CLOSE);
         }
 
-        this.fancy_roof(x, y, params);
+        if (params.fancy_roof) {
+            this.fancy_roof(x, y, params);
+        }
 
         // level roofing
         if (params.width_decrement > 0) {
@@ -151,12 +181,12 @@ class Skyline {
                 new_params.recursed = true;
                 new_params.primary_mass = false;
                 push();
-                this.landmark(x + (l * params.width_decrement),
+                this.building(x + (l * params.width_decrement),
                               y - (l * params.level_height),
                               new_params);
 
                 var end = x + params.width - (l * params.width_decrement);
-                this.landmark(end - new_params.width,
+                this.building(end - new_params.width,
                               y - (l * params.level_height),
                               new_params);
                 if (l > 0 && params.width_decrement > 0) {
@@ -170,8 +200,8 @@ class Skyline {
 
         if (params.primary_mass && params.add_secondary) {
             // additional masses
-            this.landmark(x - mass_params.width - distance, y, mass_params);
-            this.landmark(x + params.width + distance, y, mass_params);
+            this.building(x - mass_params.width - distance, y, mass_params);
+            this.building(x + params.width + distance, y, mass_params);
         }
     }
 
@@ -250,16 +280,6 @@ class Skyline {
         vertex(x - min_width, y - qheight);
         vertex(x + min_width, y - qheight);
         vertex(x + base, y);
-    }
-
-
-    building(x, y, rheight, rwidth) {
-        beginShape();
-        vertex(x, y);
-        vertex(x, y - rheight);
-        vertex(x + rwidth, y - rheight);
-        vertex(x + rwidth, y);
-        endShape(CLOSE);
     }
 
     polygon(x, y, radius, npoints) {
