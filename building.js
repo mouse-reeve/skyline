@@ -34,9 +34,9 @@ class Skyline {
             'plants': ['#575403', '#615D02', '#7B6E06', '#503C01', '#4D6100', '#818B1B'],
             'trunk': '#A1897F',
         }
+        this.tree = [this.oak_tree];
         //this.pallette = pallettes.arctic;
         if (climate == 'tropical') {
-            this.tree = this.oak_tree;
             this.pallette.building = '#263844',
             this.pallette.landmark = '#606E79',
             this.pallette.sky = [
@@ -93,7 +93,7 @@ class Skyline {
             var h = base_height - (Math.abs(x - (width / 4)) * slope);
             var plant_width = Math.abs(h / 2 + 5) * random(1, 3);
             if (random() > 0.5) {
-                this.tree(x, this.horizon + (h/2) - 2, plant_width);
+                random(this.tree).call(this, x, this.horizon + (h/2) - 2, plant_width);
             }
             if (random() > 0.7) {
                 this.shrub(x, this.horizon + (h/2) - 2, plant_width / 3);
@@ -230,7 +230,7 @@ class Skyline {
             var building_width = random(45, 65) - layer ** 2;
             this.simple_building(i, this.horizon + h / 8, elevation + random(h - 5, h + 5), building_width, fill_color, secondary_shape);
             if (layer && random() > 0.7) {
-                this.tree(i, this.horizon - (h * 0.7), 10 + (h / 4), layer ** 0.3 / 4.5);
+                random(this.tree).call(this, i, this.horizon - (h * 0.7), 10 + (h / 4), layer ** 0.3 / 4.5);
             }
         }
         pop()
