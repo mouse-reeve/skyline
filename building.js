@@ -11,17 +11,28 @@ function setup() {
     black = color(0);
     white = color(255);
 
-    var skyline = new Skyline(seed);
+    // options are: arctic, tropical, arid, temperate
+    var skyline = new Skyline('arctic', seed);
     skyline.draw_skyline();
 
     noLoop();
 }
 
 class Skyline {
-    constructor(seed) {
+    constructor(climate, seed) {
         seed = seed || (new Date).getTime();
         randomSeed(seed);
         this.horizon = 0.7 * height;
+        var pallettes = {
+            'arctic': {
+                'building': '#162137',
+                'sky': [
+                    '#A5C2D2', '#9ABED4', '#536788', '#B9CCD2', '#6BA5CD', '#9ABDD3', '#CED6D8',
+                    '#F2D9C5', '#BCABA3', '#A395A4'],
+                'water': ['#ACBAC7', '#808E9B', '#8F9DAA', '#9EABBB'],
+            }
+        }
+        this.pallette = pallettes.arctic;
     }
 
     draw_skyline() {
@@ -33,10 +44,10 @@ class Skyline {
     add_buildings() {
         // place a building 1/4 in and scale down around it
 
-        var pallette = ['#162137'];//, '#1E293D'];
+        var base_color = color(this.pallette.building);
         var secondary_shape = random(['dome', 'triangle', 'quadrilateral']);
-        this.building_row(4, secondary_shape, pallette);
-        this.building_row(3, secondary_shape, pallette);
+        this.building_row(4, secondary_shape, base_color);
+        this.building_row(3, secondary_shape, base_color);
 
         // Landmark
         push();
@@ -65,18 +76,18 @@ class Skyline {
         this.building(width / 4 - (params.width / 2), this.horizon - elevation, params, secondary_shape);
         pop()
 
-        this.building_row(2, secondary_shape, pallette);
-        this.building_row(1, secondary_shape, pallette);
-        this.building_row(0, secondary_shape, pallette);
+        this.building_row(2, secondary_shape, base_color);
+        this.building_row(1, secondary_shape, base_color);
+        this.building_row(0, secondary_shape, base_color);
     }
 
-    building_row(layer, secondary_shape, pallette) {
+    building_row(layer, secondary_shape, base_color) {
         push();
         noStroke();
         var slope = 0.05 + (layer / 50);
         var base_height = (0.75 * width) * slope + 20
 
-        var fill_color = lerpColor(color(random(pallette)), white, 0.03 * layer);
+        var fill_color = lerpColor(base_color, white, 0.03 * layer);
         for (var i = 0; i < width; i+=building_width - 1) {
             var h = base_height - (Math.abs(i - (width / 4)) * slope);
             var elevation = layer * 10;
@@ -304,9 +315,7 @@ class Skyline {
     add_sky() {
         // pixel gradients
         push();
-        var pallette = [
-            '#A5C2D2', '#9ABED4', '#536788', '#B9CCD2', '#6BA5CD', '#9ABDD3', '#CED6D8',
-            '#F2D9C5', '#BCABA3', '#A395A4']
+        var pallette = this.pallette.sky;
         var colors = [];
         for (var c = 0; c < random(3, 6); c++) {
             colors.push(random(pallette));
@@ -334,7 +343,7 @@ class Skyline {
     }
 
     add_ocean() {
-        var pallette = ['#ACBAC7', '#808E9B', '#8F9DAA', '#9EABBB'];
+        var pallette = this.pallette.water;
 
         push();
         noStroke();
