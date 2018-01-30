@@ -36,6 +36,7 @@ class Skyline {
         var pallette = ['#162137'];//, '#1E293D'];
         var secondary_shape = random(['dome', 'triangle', 'quadrilateral']);
         this.building_row(4, secondary_shape, pallette);
+        this.building_row(3, secondary_shape, pallette);
 
         // Landmark
         push();
