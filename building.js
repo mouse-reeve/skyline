@@ -12,7 +12,7 @@ function setup() {
     white = color(255);
 
     // options are: arctic, tropical, arid, temperate
-    var skyline = new Skyline('arctic', seed);
+    var skyline = new Skyline('tropical', seed);
     skyline.draw_skyline();
 
     noLoop();
@@ -23,35 +23,31 @@ class Skyline {
         seed = seed || (new Date).getTime();
         randomSeed(seed);
         this.horizon = 0.7 * height;
-        var pallettes = {
-            'arctic': {
-                'building': '#162137',
-                'landmark': '#2F4260',
-                'sky': [
-                    '#A5C2D2', '#9ABED4', '#536788', '#B9CCD2', '#6BA5CD', '#9ABDD3', '#CED6D8',
-                    '#F2D9C5', '#BCABA3', '#A395A4'],
-                'water': ['#ACBAC7', '#808E9B', '#8F9DAA', '#9EABBB'],
-                'beach': ['#C09E9C', '#D1AEAC', '#A1897F'],
-                'plants': ['#575403', '#615D02', '#7B6E06', '#503C01', '#4D6100', '#818B1B'],
-                'trunk': '#A1897F',
-            },
-            'tropical': {
-                'building': '#263844',
-                'landmark': '#606E79',
-                'sky': [
-                    '#90C4F4', '#B0D7F8', '#81BCF6', '#D0E9FF', '#A3C7F7', '#AFD6F7',
-                    '#F2D9C5', '#EAE6DA', '#FFF7C3', '#FFE2AC'],
-                'water': [],
-                'beach': ['#C09E9C', '#D1AEAC', '#A1897F'],
-                'plants': ['#575403', '#615D02', '#7B6E06', '#503C01', '#4D6100', '#818B1B'],
-                'trunk': '#A1897F',
-            },
+        this.pallette = {
+            'building': '#162137',
+            'landmark': '#2F4260',
+            'sky': [
+                '#A5C2D2', '#9ABED4', '#536788', '#B9CCD2', '#6BA5CD', '#9ABDD3', '#CED6D8',
+                '#F2D9C5', '#BCABA3', '#A395A4'],
+            'water': ['#ACBAC7', '#808E9B', '#8F9DAA', '#9EABBB'],
+            'beach': ['#C09E9C', '#D1AEAC', '#A1897F'],
+            'plants': ['#575403', '#615D02', '#7B6E06', '#503C01', '#4D6100', '#818B1B'],
+            'trunk': '#A1897F',
         }
-        for (var c = 0; c < pallettes.arctic.water.length; c++) {
-            pallettes.tropical.water.push(lerpColor(color(pallettes.arctic.water[c]), color('#0084D6'), 0.3));
-        }
-        this.pallette = pallettes.tropical;
         //this.pallette = pallettes.arctic;
+        if (climate == 'tropical') {
+            this.tree = this.oak_tree;
+            this.pallette.building = '#263844',
+            this.pallette.landmark = '#606E79',
+            this.pallette.sky = [
+                '#90C4F4', '#B0D7F8', '#81BCF6', '#D0E9FF', '#A3C7F7', '#AFD6F7',
+                '#F2D9C5', '#EAE6DA', '#FFF7C3', '#FFE2AC']
+            var waters = [];
+            for (var c = 0; c < this.pallette.water.length; c++) {
+                waters.push(lerpColor(color(this.pallette.water[c]), color('#0084D6'), 0.3));
+            }
+            this.pallette.water = waters;
+        }
     }
 
     draw_skyline() {
@@ -107,7 +103,7 @@ class Skyline {
         pop()
     }
 
-    tree(x, y, plant_width, shadow) {
+    oak_tree(x, y, plant_width, shadow) {
         var lerp_value = 0.5 + (shadow || 0);
         var fill_color = lerpColor(color(random(this.pallette.plants)), color(this.pallette.building), lerp_value);
 
