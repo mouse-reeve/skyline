@@ -79,7 +79,7 @@ class Skyline {
         for (var i = 0; i < width; i+=building_width - 1) {
             var h = base_height - (Math.abs(i - (width / 4)) * slope);
             var elevation = layer * 10;
-            var building_width = random(25, 35) + layer ** 2;
+            var building_width = random(35, 45) - 0.5 * layer ** 2;
             this.simple_building(i, this.horizon + h / 8, elevation + random(h - 5, h + 5), building_width, fill_color, secondary_shape);
         }
         pop()
