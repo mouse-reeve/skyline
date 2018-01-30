@@ -12,7 +12,7 @@ function setup() {
     white = color(255);
 
     // options are: arctic, tropical, arid, temperate
-    var skyline = new Skyline('tropical', seed);
+    var skyline = new Skyline('arctic', seed);
     skyline.draw_skyline();
 
     noLoop();
@@ -35,6 +35,7 @@ class Skyline {
             'trunk': '#A1897F',
         }
         this.tree = [this.oak_tree];
+        this.shrub = this.bush;
         //this.pallette = pallettes.arctic;
         if (climate == 'tropical') {
             this.pallette.building = '#263844',
@@ -47,6 +48,9 @@ class Skyline {
                 waters.push(lerpColor(color(this.pallette.water[c]), color('#0084D6'), 0.3));
             }
             this.pallette.water = waters;
+        } else if (climate == 'arctic') {
+            this.tree = [this.pine_tree];
+            this.shrub = false;
         }
     }
 
@@ -95,7 +99,7 @@ class Skyline {
             if (random() > 0.5) {
                 random(this.tree).call(this, x, this.horizon + (h/2) - 2, plant_width);
             }
-            if (random() > 0.7) {
+            if (this.shrub && random() > 0.7) {
                 this.shrub(x, this.horizon + (h/2) - 2, plant_width / 3);
                 this.shrub(x + plant_width / 2, this.horizon + (h/2) - 2, plant_width / 3);
             }
@@ -148,7 +152,41 @@ class Skyline {
         }
     }
 
-    shrub(x, y, plant_width) {
+    pine_tree(x, y, plant_width, shadow) {
+        var lerp_value = 0.6 + (shadow || 0);
+        var fill_color = lerpColor(color(random(this.pallette.plants)), color(this.pallette.building), lerp_value);
+
+        var trunk_width = random(0.05, 0.2) * plant_width;
+        push();
+        beginShape();
+        fill(lerpColor(color(this.pallette.trunk), color(this.pallette.building), lerp_value));
+        vertex(x, y);
+        vertex(x + (trunk_width / 2), y - plant_width / 4);
+        vertex(x + trunk_width, y);
+        endShape(CLOSE);
+        pop();
+
+        /*
+        for (var p = 0; p < 15; p++) {
+            var wo = (plant_width / 4) + random(plant_width / -8, plant_width / 8);
+            var xo = (plant_width / 8) + random(-0.4 * plant_width, 0.4 * plant_width);
+            var yo = plant_width + sin(random(0, TWO_PI)) * xo;
+            push();
+            fill(lerpColor(fill_color, black, random(0, 0.2)));
+            beginShape();
+            this.polygon(x + xo, y - yo, wo, 5);
+            endShape(CLOSE);
+            if (random() > 0.5) {
+                beginShape();
+                this.polygon(x - xo, y - yo, wo, 5);
+                endShape(CLOSE);
+            }
+            pop();
+        }
+        */
+    }
+
+    bush(x, y, plant_width) {
         var fill_color = lerpColor(color(random(this.pallette.plants)), color(this.pallette.building), 0.6);
 
         push();
