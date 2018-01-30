@@ -26,19 +26,155 @@ class Skyline {
         var pallettes = {
             'arctic': {
                 'building': '#162137',
+                'landmark': '#2F4260',
                 'sky': [
                     '#A5C2D2', '#9ABED4', '#536788', '#B9CCD2', '#6BA5CD', '#9ABDD3', '#CED6D8',
                     '#F2D9C5', '#BCABA3', '#A395A4'],
                 'water': ['#ACBAC7', '#808E9B', '#8F9DAA', '#9EABBB'],
-            }
+            },
+            'tropical': {
+                'building': '#263844',
+                'landmark': '#606E79',
+                'sky': [
+                    '#90C4F4', '#B0D7F8', '#81BCF6', '#D0E9FF', '#A3C7F7', '#AFD6F7',
+                    '#F2D9C5', '#EAE6DA', '#FFF7C3', '#FFE2AC'],
+                'water': [],
+                'beach': ['#C09E9C', '#D1AEAC', '#A1897F'],
+                'plants': ['#575403', '#615D02', '#7B6E06', '#503C01', '#4D6100', '#818B1B'],
+                'trunk': '#A1897F',
+            },
         }
-        this.pallette = pallettes.arctic;
+        for (var c = 0; c < pallettes.arctic.water.length; c++) {
+            pallettes.tropical.water.push(lerpColor(color(pallettes.arctic.water[c]), color('#0084D6'), 0.3));
+        }
+        this.pallette = pallettes.tropical;
+        //this.pallette = pallettes.arctic;
     }
 
     draw_skyline() {
         this.add_sky();
         this.add_ocean();
         this.add_buildings();
+        this.add_coastline();
+    }
+
+    add_coastline() {
+        var slope = 0.015;
+        var base_height = (0.75 * width) * slope;
+        var h = 2;
+        for (var x = 0; x < width + 5; x += block_width) {
+            var h = base_height - (Math.abs(x - (width / 4)) * slope);
+            var block_width = Math.abs(h / 2 + 5) + random(-0.5, 0.5);
+
+            push();
+            fill(lerpColor(color(this.pallette.beach[0]), color(this.pallette.building), 0.8));
+            noStroke();
+            beginShape();
+            this.polygon(x, this.horizon + h - (block_width * 0.05), block_width, 4);
+            endShape(CLOSE);
+            pop();
+        }
+        for (var x = 0; x < width + 20; x += 2 * block_width / h) {
+            var h = base_height - (Math.abs(x - (width / 4)) * slope);
+            var block_width = random(2, 4);
+
+            push();
+            fill(lerpColor(color(random(this.pallette.beach)), color(this.pallette.building), 0.9));
+            noStroke();
+            beginShape();
+            this.polygon(x + random(h / -2, h / 2), this.horizon + h - (block_width * 0.3) + random(h / -2, h / 2), block_width, random(9, 20));
+            endShape(CLOSE);
+            pop();
+        }
+
+        push();
+        noStroke();
+
+        for (var x = 0; x < width + 5; x += plant_width) {
+            var h = base_height - (Math.abs(x - (width / 4)) * slope);
+            var plant_width = Math.abs(h / 2 + 5) * random(1, 3);
+            if (random() > 0.5) {
+                this.tree(x, this.horizon + (h/2) - 2, plant_width);
+            }
+            if (random() > 0.7) {
+                this.shrub(x, this.horizon + (h/2) - 2, plant_width / 3);
+                this.shrub(x + plant_width / 2, this.horizon + (h/2) - 2, plant_width / 3);
+            }
+        }
+        pop()
+    }
+
+    tree(x, y, plant_width) {
+        var fill_color = lerpColor(color(random(this.pallette.plants)), color(this.pallette.building), 0.5);
+
+        push();
+        fill(lerpColor(color(random(this.pallette.plants)), color(this.pallette.building), 0.6));
+        beginShape();
+        this.polygon(x + (plant_width / 8), y - plant_width, plant_width * 0.7, random(5, 7));
+        endShape(CLOSE);
+        pop();
+
+        var trunk_width = random(0.05, 0.2) * plant_width;
+        push();
+        beginShape();
+        fill(lerpColor(color(this.pallette.trunk), color(this.pallette.building), 0.7));
+        vertex(x, y);
+        vertex(x, y - plant_width / 4);
+
+        vertex(x - 3, y - plant_width);
+        vertex(x + (trunk_width / 2), y - (plant_width / 2));
+        vertex(x + trunk_width + 3, y - plant_width);
+
+        vertex(x + trunk_width, y - plant_width / 4);
+        vertex(x + trunk_width, y);
+        endShape(CLOSE);
+        pop();
+
+        for (var p = 0; p < 15; p++) {
+            var wo = (plant_width / 4) + random(plant_width / -8, plant_width / 8);
+            var xo = (plant_width / 8) + random(-0.4 * plant_width, 0.4 * plant_width);
+            var yo = plant_width + sin(random(0, TWO_PI)) * xo;
+            push();
+            fill(lerpColor(fill_color, black, random(0, 0.2)));
+            beginShape();
+            this.polygon(x + xo, y - yo, wo, 5);
+            endShape(CLOSE);
+            if (random() > 0.5) {
+                beginShape();
+                this.polygon(x - xo, y - yo, wo, 5);
+                endShape(CLOSE);
+            }
+            pop();
+        }
+    }
+
+    shrub(x, y, plant_width) {
+        var fill_color = lerpColor(color(random(this.pallette.plants)), color(this.pallette.building), 0.6);
+
+        push();
+        fill(fill_color);
+        beginShape();
+        this.polygon(x - (plant_width / 3), y - plant_width / 2, plant_width * 0.7, random(5, 7));
+        this.polygon(x + (plant_width / 3), y - plant_width / 2, plant_width * 0.7, random(5, 7));
+        endShape(CLOSE);
+        pop();
+
+        for (var p = 0; p < 15; p++) {
+            var wo = (plant_width / 4) + random(plant_width / -8, plant_width / 8);
+            var xo = random(-0.9 * plant_width, 0.9 * plant_width);
+            var yo = random(0.4 * plant_width, 0.8 * plant_width);
+            push();
+            fill(lerpColor(fill_color, color(random(this.pallette.plants)), random(0, 0.3)));
+            beginShape();
+            this.polygon(x + xo, y - yo, wo, 5);
+            endShape(CLOSE);
+            if (random() > 0.5) {
+                beginShape();
+                this.polygon(x - xo, y - yo, wo, 5);
+                endShape(CLOSE);
+            }
+            pop();
+        }
     }
 
     add_buildings() {
@@ -64,7 +200,7 @@ class Skyline {
             'dome_start': random(3 * PI / 4, PI),
             'quad_ratio': random(1, 2),
             'level_height': 30,
-            'fill_color': color('#2F4260'),
+            'fill_color': color(this.pallette.landmark),
         }
         params.spire_height = params.accent_shape == 'quadrilateral' ? random([0, random(0, 15)]) : random(3, 20);
         params.width_decrement = (150 - (150 / random([1, 1.5, 2]))) / (params.levels + 1);
@@ -305,7 +441,8 @@ class Skyline {
 
     polygon(x, y, radius, npoints) {
         var angle = TWO_PI / npoints;
-        for (var a = 0; a < TWO_PI; a += angle) {
+        var start = (3 * PI) / 4;
+        for (var a = start; a < TWO_PI + start; a += angle) {
             var sx = x + cos(a) * radius;
             var sy = y + sin(a) * radius;
             vertex(sx, sy);
