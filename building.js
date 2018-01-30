@@ -107,11 +107,12 @@ class Skyline {
         pop()
     }
 
-    tree(x, y, plant_width) {
-        var fill_color = lerpColor(color(random(this.pallette.plants)), color(this.pallette.building), 0.5);
+    tree(x, y, plant_width, shadow) {
+        var lerp_value = 0.5 + (shadow || 0);
+        var fill_color = lerpColor(color(random(this.pallette.plants)), color(this.pallette.building), lerp_value);
 
         push();
-        fill(lerpColor(color(random(this.pallette.plants)), color(this.pallette.building), 0.6));
+        fill(lerpColor(color(random(this.pallette.plants)), color(this.pallette.building), lerp_value));
         beginShape();
         this.polygon(x + (plant_width / 8), y - plant_width, plant_width * 0.7, random(5, 7));
         endShape(CLOSE);
@@ -120,7 +121,7 @@ class Skyline {
         var trunk_width = random(0.05, 0.2) * plant_width;
         push();
         beginShape();
-        fill(lerpColor(color(this.pallette.trunk), color(this.pallette.building), 0.7));
+        fill(lerpColor(color(this.pallette.trunk), color(this.pallette.building), lerp_value));
         vertex(x, y);
         vertex(x, y - plant_width / 4);
 
@@ -232,6 +233,9 @@ class Skyline {
             var elevation = layer * 10;
             var building_width = random(45, 65) - layer ** 2;
             this.simple_building(i, this.horizon + h / 8, elevation + random(h - 5, h + 5), building_width, fill_color, secondary_shape);
+            if (layer && random() > 0.7) {
+                this.tree(i, this.horizon - (h * 0.7), 10 + (h / 4), layer ** 0.3 / 4.5);
+            }
         }
         pop()
     }
