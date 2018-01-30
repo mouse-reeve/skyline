@@ -150,8 +150,8 @@ class Skyline {
         for (var l = 0; l < params.levels; l++) {
             beginShape();
             vertex(x + (l * params.width_decrement), y - (l * params.level_height));
-            vertex(x + (l * params.width_decrement), y - ((l + 1) * params.level_height));
-            vertex(x + params.width - (l * params.width_decrement), y - ((l + 1) * params.level_height));
+            vertex(x + (l * params.width_decrement), y - ((l + 1) * params.level_height) - 1);
+            vertex(x + params.width - (l * params.width_decrement), y - ((l + 1) * params.level_height + 1));
             vertex(x + params.width - (l * params.width_decrement), y - (l * params.level_height));
             endShape(CLOSE);
         }
