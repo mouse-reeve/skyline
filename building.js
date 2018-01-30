@@ -164,10 +164,9 @@ class Skyline {
         if (params.width_decrement > 0) {
             for (var l = 0; l < params.levels; l++) {
                 push()
-                fill(lerpColor(params.fill_color, black, 0.2));
+                fill(lerpColor(params.fill_color, black, 0.1));
                 this.roof(x, y, l, params);
                 pop();
-
             }
         }
 
@@ -180,7 +179,7 @@ class Skyline {
                 new_params.width_decrement *= 0.9;
                 new_params.level_height *= 0.8;
                 new_params.width = (params.width - (l * params.width_decrement)) / 3;
-                new_params.fill_color = lerpColor(params.fill_color, white, 0.1);
+                new_params.fill_color = lerpColor(params.fill_color, white, 0.05);
                 new_params.spire_height *= 0.6;
                 new_params.recursed = true;
                 new_params.primary_mass = false;
@@ -195,7 +194,7 @@ class Skyline {
                               new_params);
                 if (l > 0 && params.width_decrement > 0) {
                     push();
-                    fill(lerpColor(params.fill_color, black, 0.2));
+                    fill(lerpColor(params.fill_color, black, 0.1));
                     this.roof(x, y, l-1, params);
                     pop();
                 }
