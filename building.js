@@ -31,6 +31,9 @@ class Skyline {
                     '#A5C2D2', '#9ABED4', '#536788', '#B9CCD2', '#6BA5CD', '#9ABDD3', '#CED6D8',
                     '#F2D9C5', '#BCABA3', '#A395A4'],
                 'water': ['#ACBAC7', '#808E9B', '#8F9DAA', '#9EABBB'],
+                'beach': ['#C09E9C', '#D1AEAC', '#A1897F'],
+                'plants': ['#575403', '#615D02', '#7B6E06', '#503C01', '#4D6100', '#818B1B'],
+                'trunk': '#A1897F',
             },
             'tropical': {
                 'building': '#263844',
