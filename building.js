@@ -74,13 +74,13 @@ class Skyline {
         push();
         noStroke();
         var slope = 0.05 + (layer / 50);
-        var base_height = (0.75 * width) * slope + 10
+        var base_height = (0.75 * width) * slope + 20
 
         var fill_color = lerpColor(color(random(pallette)), white, 0.03 * layer);
         for (var i = 0; i < width; i+=building_width - 1) {
             var h = base_height - (Math.abs(i - (width / 4)) * slope);
             var elevation = layer * 10;
-            var building_width = random(35, 45) - 0.5 * layer ** 2;
+            var building_width = random(45, 65) - layer ** 2;
             this.simple_building(i, this.horizon + h / 8, elevation + random(h - 5, h + 5), building_width, fill_color, secondary_shape);
         }
         pop()
@@ -159,6 +159,12 @@ class Skyline {
 
         if (params.fancy_roof) {
             this.fancy_roof(x, y, params);
+        } else if (random() > 0.3) {
+            var roof_params = Object.assign({}, params);
+            roof_params.spire_height = 0;
+            roof_params.accent_shape = 'quadrilateral';
+            roof_params.quad_ratio = random(1, 1.5);
+            this.fancy_roof(x, y, roof_params);
         }
 
         // level roofing
