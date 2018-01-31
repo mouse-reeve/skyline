@@ -12,7 +12,8 @@ function setup() {
     white = color(255);
 
     // options are: arctic, tropical, arid, temperate
-    var skyline = new Skyline('arctic', seed);
+    climate = random(['arctic', 'tropical']);//, 'arid', 'temperate'])
+    var skyline = new Skyline(climate, seed);
     skyline.draw_skyline();
 
     noLoop();
