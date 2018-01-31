@@ -558,7 +558,8 @@ class Skyline {
         var color_count = Math.round(random(3, 6));
         for (var c = 0; c < color_count; c++) {
             var pallette = this.pallette.sky.blues;
-            if (c > Math.floor(color_count / 4)) {
+            if (c > Math.floor(color_count / 3)) {
+                pallette = pallette.concat(this.pallette.sky.accents);
                 pallette = pallette.concat(this.pallette.sky.accents);
                 pallette = pallette.concat(this.pallette.sky.accents);
             }
