@@ -30,6 +30,7 @@ class Skyline {
                 'blues': ['#A5C2D2', '#9ABED4', '#536788', '#B9CCD2', '#6BA5CD', '#9ABDD3', '#CED6D8'],
                 'accents': ['#F2D9C5', '#BCABA3', '#A395A4']
             },
+            'stone': '#5F6D78',
             'water': ['#ACBAC7', '#808E9B', '#8F9DAA', '#9EABBB'],
             'beach': ['#C09E9C', '#D1AEAC', '#A1897F'],
             'plants': {
@@ -42,14 +43,14 @@ class Skyline {
         this.shrub = this.bush;
         //this.pallette = pallettes.arctic;
         if (climate == 'tropical') {
-            this.pallette.building = '#263844';
-            this.pallette.landmark = '#606E79';
+            this.pallette.building = random(['#CB9C66', '#886F50', '#DBDDD5', '#C3CDC2', '#8898A7']);
+            this.pallette.landmark = lerpColor(color(this.pallette.building), white, 0.2);
             this.pallette.sky = [
                 '#90C4F4', '#B0D7F8', '#81BCF6', '#D0E9FF', '#A3C7F7', '#AFD6F7',
-                '#F2D9C5', '#EAE6DA', '#FFF7C3', '#FFE2AC']
+                '#F2D9C5', '#FFF7C3', '#FFE2AC', '#FAE98D']
             var waters = [];
             for (var c = 0; c < this.pallette.water.length; c++) {
-                waters.push(lerpColor(color(this.pallette.water[c]), color('#0084D6'), 0.3));
+                waters.push(lerpColor(color(this.pallette.water[c]), color('#0084D6'), 0.2));
             }
             this.pallette.water = waters;
             this.foliage_level = 0.4;
@@ -77,7 +78,7 @@ class Skyline {
             var block_width = Math.abs(h / 2 + 5) + random(-0.5, 0.5);
 
             push();
-            fill(lerpColor(color(this.pallette.beach[0]), color(this.pallette.building), 0.8));
+            fill(lerpColor(color(this.pallette.beach[0]), color(this.pallette.stone), 0.8));
             noStroke();
             beginShape();
             this.polygon(x, this.horizon + h - (block_width * 0.05), block_width, 4);
@@ -89,7 +90,7 @@ class Skyline {
             var block_width = random(2, 4);
 
             push();
-            fill(lerpColor(color(random(this.pallette.beach)), color(this.pallette.building), 0.9));
+            fill(lerpColor(color(random(this.pallette.beach)), color(this.pallette.stone), 0.9));
             noStroke();
             beginShape();
             this.polygon(x + random(h / -2, h / 2), this.horizon + h - (block_width * 0.3) + random(h / -2, h / 2), block_width, random(9, 20));
@@ -274,7 +275,7 @@ class Skyline {
             var building_width = random(45, 65) - layer ** 2;
             this.simple_building(i, this.horizon + h / 8, elevation + random(h - 5, h + 5), building_width, fill_color, secondary_shape);
             if (layer && random() > this.foliage_level ** 0.4) {
-                random(this.tree).call(this, i, this.horizon - (h * 0.7), 10 + (h / 4), layer ** 0.3 / 4.5);
+                random(this.tree).call(this, i, this.horizon - (h * 0.7), 10 + (h / 4), layer ** 0.3 / 8);
             }
         }
         pop()
