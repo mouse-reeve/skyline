@@ -46,9 +46,10 @@ class Skyline {
         if (climate == 'tropical') {
             this.pallette.building = random(['#CB9C66', '#886F50', '#DBDDD5', '#C3CDC2', '#8898A7']);
             this.pallette.landmark = lerpColor(color(this.pallette.building), white, 0.2);
-            this.pallette.sky = [
-                '#90C4F4', '#B0D7F8', '#81BCF6', '#D0E9FF', '#A3C7F7', '#AFD6F7',
-                '#F2D9C5', '#FFF7C3', '#FFE2AC', '#FAE98D']
+            this.pallette.sky = {
+                'blues': ['#90C4F4', '#B0D7F8', '#81BCF6', '#D0E9FF', '#A3C7F7', '#AFD6F7'],
+                'accents': ['#F2D9C5', '#FFF7C3', '#FFE2AC', '#FAE98D']
+            }
             var waters = [];
             for (var c = 0; c < this.pallette.water.length; c++) {
                 waters.push(lerpColor(color(this.pallette.water[c]), color('#0084D6'), 0.2));
@@ -59,7 +60,6 @@ class Skyline {
             this.tree = [this.poplar_tree, this.poplar_tree, this.oak_tree];
             this.shrub = false;
             this.foliage_level = 0.6;
-            this.pallette.sky = this.pallette.sky.blues.concat(this.pallette.sky.accents);
         }
     }
 
@@ -555,7 +555,13 @@ class Skyline {
         push();
         var pallette = this.pallette.sky;
         var colors = [];
-        for (var c = 0; c < random(3, 6); c++) {
+        var color_count = Math.round(random(3, 6));
+        for (var c = 0; c < color_count; c++) {
+            var pallette = this.pallette.sky.blues;
+            if (c > Math.floor(color_count / 4)) {
+                pallette = pallette.concat(this.pallette.sky.accents);
+                pallette = pallette.concat(this.pallette.sky.accents);
+            }
             colors.push(random(pallette));
         }
 
