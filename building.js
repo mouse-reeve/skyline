@@ -48,9 +48,11 @@ class Skyline {
                 waters.push(lerpColor(color(this.pallette.water[c]), color('#0084D6'), 0.3));
             }
             this.pallette.water = waters;
+            this.foliage_level = 0.5;
         } else if (climate == 'arctic') {
             this.tree = [this.pine_tree];
             this.shrub = false;
+            this.foliage_level = 0.8;
         }
     }
 
@@ -96,7 +98,7 @@ class Skyline {
         for (var x = 0; x < width + 5; x += plant_width) {
             var h = base_height - (Math.abs(x - (width / 4)) * slope);
             var plant_width = Math.abs(h / 2 + 5) * random(1, 3);
-            if (random() > 0.5) {
+            if (random() > this.foliage_level) {
                 random(this.tree).call(this, x, this.horizon + (h/2) - 2, plant_width);
             }
             if (this.shrub && random() > 0.7) {
@@ -266,7 +268,7 @@ class Skyline {
             var elevation = layer * 10;
             var building_width = random(45, 65) - layer ** 2;
             this.simple_building(i, this.horizon + h / 8, elevation + random(h - 5, h + 5), building_width, fill_color, secondary_shape);
-            if (layer && random() > 0.7) {
+            if (layer && random() > this.foliage_level ** 0.4) {
                 random(this.tree).call(this, i, this.horizon - (h * 0.7), 10 + (h / 4), layer ** 0.3 / 4.5);
             }
         }
