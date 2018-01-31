@@ -12,7 +12,7 @@ function setup() {
     white = color(255);
 
     // options are: arctic, tropical, arid, temperate
-    var skyline = new Skyline('arctic', seed);
+    var skyline = new Skyline('tropical', seed);
     skyline.draw_skyline();
 
     noLoop();
@@ -26,20 +26,24 @@ class Skyline {
         this.pallette = {
             'building': '#162137',
             'landmark': '#2F4260',
-            'sky': [
-                '#A5C2D2', '#9ABED4', '#536788', '#B9CCD2', '#6BA5CD', '#9ABDD3', '#CED6D8',
-                '#F2D9C5', '#BCABA3', '#A395A4'],
+            'sky': {
+                'blues': ['#A5C2D2', '#9ABED4', '#536788', '#B9CCD2', '#6BA5CD', '#9ABDD3', '#CED6D8'],
+                'accents': ['#F2D9C5', '#BCABA3', '#A395A4']
+            },
             'water': ['#ACBAC7', '#808E9B', '#8F9DAA', '#9EABBB'],
             'beach': ['#C09E9C', '#D1AEAC', '#A1897F'],
-            'plants': ['#575403', '#615D02', '#7B6E06', '#503C01', '#4D6100', '#818B1B'],
+            'plants': {
+                'greens': ['#575403', '#615D02', '#7B6E06', '#4D6100', '#818B1B'],
+                'browns': ['#503C01', '#461801', '#B5942B', '#643D00', '#3A2D00'],
+            },
             'trunk': '#A1897F',
         }
         this.tree = [this.oak_tree];
         this.shrub = this.bush;
         //this.pallette = pallettes.arctic;
         if (climate == 'tropical') {
-            this.pallette.building = '#263844',
-            this.pallette.landmark = '#606E79',
+            this.pallette.building = '#263844';
+            this.pallette.landmark = '#606E79';
             this.pallette.sky = [
                 '#90C4F4', '#B0D7F8', '#81BCF6', '#D0E9FF', '#A3C7F7', '#AFD6F7',
                 '#F2D9C5', '#EAE6DA', '#FFF7C3', '#FFE2AC']
@@ -48,11 +52,12 @@ class Skyline {
                 waters.push(lerpColor(color(this.pallette.water[c]), color('#0084D6'), 0.3));
             }
             this.pallette.water = waters;
-            this.foliage_level = 0.5;
+            this.foliage_level = 0.4;
         } else if (climate == 'arctic') {
             this.tree = [this.pine_tree];
             this.shrub = false;
             this.foliage_level = 0.8;
+            this.pallette.sky = this.pallette.sky.blues.concat(this.pallette.sky.accents);
         }
     }
 
@@ -111,10 +116,10 @@ class Skyline {
 
     oak_tree(x, y, plant_width, shadow) {
         var lerp_value = 0.5 + (shadow || 0);
-        var fill_color = lerpColor(color(random(this.pallette.plants)), color(this.pallette.building), lerp_value);
+        var fill_color = lerpColor(color(random(this.pallette.plants.greens)), color(this.pallette.building), lerp_value);
 
         push();
-        fill(lerpColor(color(random(this.pallette.plants)), color(this.pallette.building), lerp_value));
+        fill(lerpColor(color(random(this.pallette.plants.greens)), color(this.pallette.building), lerp_value));
         beginShape();
         this.polygon(x + (plant_width / 8), y - plant_width, plant_width * 0.7, random(5, 7));
         endShape(CLOSE);
@@ -156,7 +161,7 @@ class Skyline {
 
     pine_tree(x, y, plant_width, shadow) {
         var lerp_value = 0.6 + (shadow || 0);
-        var fill_color = lerpColor(color(random(this.pallette.plants)), color(this.pallette.building), lerp_value);
+        var fill_color = lerpColor(color(random(this.pallette.plants.greens)), color(this.pallette.building), lerp_value);
 
         var plant_height = plant_width * 2;
 
@@ -188,7 +193,7 @@ class Skyline {
     }
 
     bush(x, y, plant_width) {
-        var fill_color = lerpColor(color(random(this.pallette.plants)), color(this.pallette.building), 0.6);
+        var fill_color = lerpColor(color(random(this.pallette.plants.greens)), color(this.pallette.building), 0.6);
 
         push();
         fill(fill_color);
@@ -203,7 +208,7 @@ class Skyline {
             var xo = random(-0.9 * plant_width, 0.9 * plant_width);
             var yo = random(0.4 * plant_width, 0.8 * plant_width);
             push();
-            fill(lerpColor(fill_color, color(random(this.pallette.plants)), random(0, 0.3)));
+            fill(lerpColor(fill_color, color(random(this.pallette.plants.greens)), random(0, 0.3)));
             beginShape();
             this.polygon(x + xo, y - yo, wo, 5);
             endShape(CLOSE);
