@@ -12,7 +12,7 @@ function setup() {
     white = color(255);
 
     // options are: arctic, tropical, arid, temperate
-    climate = random(['arctic', 'tropical']);//, 'arid', 'temperate'])
+    climate = 'arid';//random(['arctic', 'tropical', 'arid']);//, 'temperate'])
     var skyline = new Skyline(climate, seed);
     skyline.draw_skyline();
 
@@ -60,6 +60,14 @@ class Skyline {
             this.tree = [this.poplar_tree, this.poplar_tree, this.oak_tree];
             this.shrub = false;
             this.foliage_level = 0.6;
+        } else if (climate == 'arid') {
+            this.tree = false;
+            this.shrub = false;
+            this.pallette.building = random(['#815F44', '#FFE7C1', '#866C5D', '#776849', '#FBC88F']);
+            console.log(this.pallette.building);
+            this.pallette.landmark = lerpColor(color(this.pallette.building), white, 0.2);
+            this.pallette.stone = lerpColor(color(this.pallette.building), color('#91715C'), 0.5);
+            this.pallette.sky.accents = ['#FFCDC2', '#FFE0DF', '#F9F3E7', '#FFEFEE'];
         }
     }
 
