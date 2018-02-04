@@ -12,7 +12,7 @@ function setup() {
     white = color(255);
 
     // options are: arctic, tropical, arid, temperate
-    climate = 'arid';//random(['arctic', 'tropical', 'arid']);//, 'temperate'])
+    climate = random(['arctic', 'tropical', 'arid']);//, 'temperate'])
     var skyline = new Skyline(climate, seed);
     skyline.draw_skyline();
 
@@ -334,7 +334,7 @@ class Skyline {
         for (var i = 0; i < width; i+=building_width - 1) {
             var h = base_height - (Math.abs(i - (width / 4)) * slope);
             var elevation = layer * 10;
-            var building_width = random(45, 65) - layer ** 2;
+            var building_width = random(45, 65) + random([0, 0, 0, 0, 0, 0, 0, 100]) - layer ** 2;
             this.simple_building(i, this.horizon + h / 8, elevation + random(h - 5, h + 5), building_width, fill_color, secondary_shape);
             if (layer && random() > this.foliage_level ** 0.4) {
                 random(this.tree).call(this, i, this.horizon - (h * 0.7), 10 + (h / 4), layer ** 0.3 / 8);
@@ -353,7 +353,7 @@ class Skyline {
             'roof_overhang': random(0, 4),
             'roof_masses': random([1, 1, 1, 2]) * 2 - 1,
             'dome_start': dome_start,
-            'quad_ratio': random(1, 2),
+            'quad_ratio': random(0.96, 1, 2),
             'level_height': b_height,
             'levels': 1,
             'fill_color': lerpColor(fill_color, black, random(0, 0.1)),
@@ -361,6 +361,11 @@ class Skyline {
         params.spire_height = params.accent_shape == 'quadrilateral' ? random([0, random(0, 7)]) : random(3, 10);
         params.width_decrement = 0;
         params.width = b_width;
+        // avoid gigantic roofs
+
+        if (params.width > b_height) {
+            params.accent_shape = 'quadrilateral';
+        }
         params.level_recursion = false,
         params.roof_peak = params.width_decrement < 0.2 ? 0 : Math.floor(random(-1, 5));
         params.roof_lift = params.roof_peak == 0 && params.width_decrement != 0 ? random([0, 1]) : 0;
@@ -496,7 +501,7 @@ class Skyline {
             } else if (params.accent_shape == 'triangle') {
                 this.triangle(rx + offset, y - peak_height, roof_width / 2);
             } else if (params.accent_shape == 'quadrilateral') {
-                this.quadrilateral(rx + offset, y - peak_height, roof_width / 2, roof_width / 4, roof_width / (2 * params.quad_ratio));
+                this.quadrilateral(rx + offset, y - peak_height, roof_width / 2, roof_width / 20, roof_width / (2 * params.quad_ratio));
             }
             endShape(CLOSE);
 
