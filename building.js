@@ -64,7 +64,6 @@ class Skyline {
             this.tree = false;
             this.shrub = false;
             this.pallette.building = random(['#815F44', '#FFE7C1', '#866C5D', '#776849', '#FBC88F']);
-            console.log(this.pallette.building);
             this.pallette.landmark = lerpColor(color(this.pallette.building), white, 0.2);
             this.pallette.stone = lerpColor(color(this.pallette.building), color('#91715C'), 0.5);
             this.pallette.sky.blues = ['#A5C2D2', '#9ABED4', '#B9CCD2', '#6BA5CD', '#9ABDD3', '#CED6D8'];
@@ -309,7 +308,7 @@ class Skyline {
             'level_height': 30,
             'fill_color': color(this.pallette.landmark),
         }
-        params.spire_height = params.accent_shape == 'quadrilateral' ? random([0, random(0, 15)]) : random(3, 20);
+        params.spire_height = params.accent_shape == 'quadrilateral' ? random([0, random(0, 7)]) : random(3, 20);
         params.width_decrement = (150 - (150 / random([1, 1.5, 2]))) / (params.levels + 1);
         params.width = params.width_decrement > 0 ? 150 : 60;
         params.level_recursion = params.width_decrement < 0.2 ? 0 : 2;
@@ -425,7 +424,7 @@ class Skyline {
             var roof_params = Object.assign({}, params);
             roof_params.spire_height = 0;
             roof_params.accent_shape = 'quadrilateral';
-            roof_params.quad_ratio = random(1, 1.5);
+            roof_params.quad_ratio = random(0.97, 1, 1.5);
             this.fancy_roof(x, y, roof_params);
         }
 
@@ -508,7 +507,8 @@ class Skyline {
             // spire
             if (params.spire_height) {
                 beginShape();
-                this.triangle(rx + offset, y - peak_height, roof_width / 10, (roof_width / 2) + params.spire_height);
+                var spire_width = roof_width < 50 ?  roof_width / 10 : 5
+                this.triangle(rx + offset, y - peak_height, spire_width, (roof_width / 2) + params.spire_height);
                 endShape(CLOSE);
             }
         }
