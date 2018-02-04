@@ -67,6 +67,7 @@ class Skyline {
             console.log(this.pallette.building);
             this.pallette.landmark = lerpColor(color(this.pallette.building), white, 0.2);
             this.pallette.stone = lerpColor(color(this.pallette.building), color('#91715C'), 0.5);
+            this.pallette.sky.blues = ['#A5C2D2', '#9ABED4', '#B9CCD2', '#6BA5CD', '#9ABDD3', '#CED6D8'];
             this.pallette.sky.accents = ['#FFCDC2', '#FFE0DF', '#F9F3E7', '#FFEFEE'];
         }
     }
