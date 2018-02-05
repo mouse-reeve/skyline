@@ -13,17 +13,15 @@ function setup() {
         params[pair[0]] = pair[1];
     }
     var seed = params.seed || Math.floor(Math.random() * 10000);
-    var climate = params.climate || Math.floor(Math.random() * 10000);
+    // options are: arctic, tropical, arid, temperate
+    var climate = params.climate || random(['arctic', 'tropical', 'arid', 'temperate']);
+    console.log(seed, climate);
 
     black = color(0);
     white = color(255);
 
-    // options are: arctic, tropical, arid, temperate
-    climate = random(['arctic', 'tropical', 'arid', 'temperate'])
     var skyline = new Skyline(climate, seed);
     skyline.draw_skyline();
-    console.log(seed, climate);
-
 }
 
 class Skyline {
@@ -63,10 +61,21 @@ class Skyline {
             }
             this.pallette.water = waters;
             this.foliage_level = 0.4;
+            this.pallette.roof = this.split_complementary(this.pallette.landmark);
+        } else if (climate == 'temperate') {
+            this.pallette.building = random(['#CB9C66', '#886F50', '#DBDDD5', '#C3CDC2', '#8898A7']);
+            this.pallette.landmark = lerpColor(color(this.pallette.building), white, 0.2);
+            this.pallette.sky = {
+                'blues': ['#90C4F4', '#B0D7F8', '#81BCF6', '#D0E9FF', '#A3C7F7', '#AFD6F7'],
+                'accents': ['#F2D9C5', '#FFF7C3', '#FFE2AC', '#FAE98D']
+            }
+            this.foliage_level = 0.3;
+            this.pallette.roof = this.split_complementary(this.pallette.landmark);
         } else if (climate == 'arctic') {
             this.tree = [this.poplar_tree, this.poplar_tree, this.oak_tree];
             this.shrub = false;
             this.foliage_level = 0.6;
+            this.pallette.roof = lerpColor(color(this.pallette.landmark), black, 0.2);
         } else if (climate == 'arid') {
             this.tree = false;
             this.shrub = false;
@@ -75,15 +84,20 @@ class Skyline {
             this.pallette.stone = lerpColor(color(this.pallette.building), color('#91715C'), 0.5);
             this.pallette.sky.blues = ['#A5C2D2', '#9ABED4', '#B9CCD2', '#6BA5CD', '#9ABDD3', '#CED6D8'];
             this.pallette.sky.accents = ['#FFCDC2', '#FFE0DF', '#F9F3E7', '#FFEFEE'];
+            this.pallette.roof = this.split_complementary(this.pallette.landmark);
         }
 
-        // find the split complement for the roof color
-        var hsl = [color(this.pallette.landmark)._getHue(), color(this.pallette.landmark)._getSaturation(), color(this.pallette.landmark)._getLightness()];
+    }
+
+    split_complementary(start_color) {
+        // find the split complement for a given color
+        var hsl = [color(start_color)._getHue(), color(start_color)._getSaturation(), color(start_color)._getLightness()];
         pop();
         colorMode(HSL, 100);
-        this.pallette.roof = color(((hsl[0] + 20) % 100), hsl[1], hsl[2], 100);
+        var end_color = color(((hsl[0] + random([20, 60])) % 100), hsl[1], hsl[2], 100);
         colorMode(RGB);
         push();
+        return end_color;
     }
 
     draw_skyline() {
@@ -97,7 +111,7 @@ class Skyline {
         var slope = 0.015;
         var base_height = (0.75 * width) * slope;
         var h = 2;
-        for (var x = 0; x < width + 5; x += block_width) {
+        for (var x = 0; x < width + 2; x += block_width) {
             var h = base_height - (Math.abs(x - (width / 4)) * slope);
             var block_width = Math.abs(h / 2 + 5) + random(-0.5, 0.5);
 
@@ -354,9 +368,11 @@ class Skyline {
         params.width_decrement = 0;
         params.width = b_width;
         // avoid gigantic roofs
-
-        if (params.width > b_height) {
+        if (params.width > b_height * 0.7) {
             params.accent_shape = 'quadrilateral';
+        }
+        if (params.accent_shape != 'quadrilateral' && random() > 0.4) {
+            params.roof_color = lerpColor(color(this.pallette.roof), color(this.pallette.building), 0.5);
         }
         params.level_recursion = false,
         params.roof_peak = params.width_decrement < 0.2 ? 0 : Math.floor(random(-1, 5));
@@ -366,7 +382,6 @@ class Skyline {
     }
 
     landmark(x, y, level_height, levels, secondary_shape) {
-
         push();
         noStroke();
         var elevation = (height * 0.5) / 3.5;
@@ -385,7 +400,7 @@ class Skyline {
             'fill_color': color(this.pallette.landmark),
         }
         params.spire_height = params.accent_shape == 'quadrilateral' ? 0 : random(8, 20);
-        params.width_decrement = (150 - (150 / random([1, 1.5, 2]))) / (params.levels + 1);
+        params.width_decrement = params.accent_shape == 'quadrilateral' ? 0 : (150 - (150 / random([1, 1.5, 2]))) / (params.levels + 1);
         params.width = params.width_decrement > 0 ? 150 : 60;
         params.level_recursion = params.width_decrement < 0.2 ? 0 : 2;
         params.roof_peak = params.width_decrement < 0.2 ? 0 : Math.floor(random(-1, 5));
