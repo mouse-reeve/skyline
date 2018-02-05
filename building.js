@@ -68,6 +68,14 @@ class Skyline {
             this.pallette.sky.blues = ['#A5C2D2', '#9ABED4', '#B9CCD2', '#6BA5CD', '#9ABDD3', '#CED6D8'];
             this.pallette.sky.accents = ['#FFCDC2', '#FFE0DF', '#F9F3E7', '#FFEFEE'];
         }
+
+        // find the split complement for the roof color
+        var hsl = [color(this.pallette.landmark)._getHue(), color(this.pallette.landmark)._getSaturation(), color(this.pallette.landmark)._getLightness()];
+        pop();
+        colorMode(HSL, 100);
+        this.pallette.roof = color(((hsl[0] + 20) % 100), hsl[1], hsl[2], 100);
+        colorMode(RGB);
+        push();
     }
 
     draw_skyline() {
@@ -360,6 +368,7 @@ class Skyline {
             'accent_shape': secondary_shape,
             'levels': levels,
             'fancy_roof': true,
+            'roof_color': this.pallette.roof,
             'roof_overhang': random(0, 4),
             'roof_masses': random([1, 2]) * 2 - 1,
             'dome_start': random(3 * PI / 4, PI),
@@ -493,6 +502,10 @@ class Skyline {
         var center = Math.floor(params.roof_masses / 2);
 
         var rx = x + ((params.levels - 1) * params.width_decrement);
+        push();
+        if (params.roof_color) {
+            fill(params.roof_color);
+        }
         for (var i = 0; i < params.roof_masses; i ++) {
             beginShape();
             var scale = center - i;
@@ -525,6 +538,7 @@ class Skyline {
                 endShape(CLOSE);
             }
         }
+        pop();
     }
 
     roof(x, y, l, params) {
@@ -547,11 +561,11 @@ class Skyline {
 
         var angle = TWO_PI / npoints;
         for (var a = start; a < TWO_PI + (PI - start); a += angle) {
+            if (a + angle > TWO_PI + (PI - start)) {
+                a = TWO_PI + (PI - start);
+            }
             var sx = x + cos(a) * radius;
             var sy = y + (sin(a) * radius) - y_offset;
-            if (a + angle >= TWO_PI + (PI - start)) {
-                sy += 0.15;
-            }
             vertex(sx, sy);
         }
     }
