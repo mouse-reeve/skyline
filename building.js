@@ -6,15 +6,23 @@ function setup() {
     var canvas = createCanvas(1165, 600);
     canvas.parent(container);
 
-    var seed = container.getAttribute('data-seed');
+    var param_string = window.location.search.substr(1).split('&');
+    var params = {};
+    for (var i = 0; i < param_string.length; i++) {
+        var pair = param_string[i].split('=');
+        params[pair[0]] = pair[1];
+    }
+    var seed = params.seed || Math.floor(Math.random() * 10000);
+    var climate = params.climate || Math.floor(Math.random() * 10000);
 
     black = color(0);
     white = color(255);
 
     // options are: arctic, tropical, arid, temperate
-    climate = random(['arctic', 'tropical', 'arid']);//, 'temperate'])
+    climate = random(['arctic', 'tropical', 'arid', 'temperate'])
     var skyline = new Skyline(climate, seed);
     skyline.draw_skyline();
+    console.log(seed, climate);
 
 }
 
