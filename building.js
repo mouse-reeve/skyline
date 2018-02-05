@@ -292,31 +292,9 @@ class Skyline {
         this.building_row(3, secondary_shape, base_color);
 
         // Landmark
-        push();
-        noStroke();
-        var elevation = (height * 0.5) / 3.5;
-        var params = {
-            'primary_mass': true,
-            'add_secondary': random([true, false]),
-            'accent_shape': secondary_shape,
-            'levels': 5,
-            'fancy_roof': true,
-            'roof_overhang': random(0, 4),
-            'roof_masses': random([1, 2]) * 2 - 1,
-            'dome_start': random(3 * PI / 4, PI),
-            'quad_ratio': random(1, 2),
-            'level_height': 30,
-            'fill_color': color(this.pallette.landmark),
-        }
-        params.spire_height = params.accent_shape == 'quadrilateral' ? random([0, random(0, 7)]) : random(3, 20);
-        params.width_decrement = (150 - (150 / random([1, 1.5, 2]))) / (params.levels + 1);
-        params.width = params.width_decrement > 0 ? 150 : 60;
-        params.level_recursion = params.width_decrement < 0.2 ? 0 : 2;
-        params.roof_peak = params.width_decrement < 0.2 ? 0 : Math.floor(random(-1, 5));
-        params.roof_lift = params.roof_peak == 0 && params.width_decrement != 0 ? random([0, 1]) : 0;
-
-        this.building(width / 4 - (params.width / 2), this.horizon - elevation, params, secondary_shape);
-        pop()
+        var lm_x = width / 4;
+        var lm_y = this.horizon;
+        this.landmark(lm_x, lm_y, 30, 5, secondary_shape);
 
         this.building_row(2, secondary_shape, base_color);
         this.building_row(1, secondary_shape, base_color);
@@ -357,7 +335,7 @@ class Skyline {
             'levels': 1,
             'fill_color': lerpColor(fill_color, black, random(0, 0.1)),
         }
-        params.spire_height = params.accent_shape == 'quadrilateral' ? random([0, random(0, 7)]) : random(3, 10);
+        params.spire_height = params.accent_shape == 'quadrilateral' ? 0 : random(3, 10);
         params.width_decrement = 0;
         params.width = b_width;
         // avoid gigantic roofs
@@ -370,6 +348,39 @@ class Skyline {
         params.roof_lift = params.roof_peak == 0 && params.width_decrement != 0 ? random([0, 1]) : 0;
 
         this.building(x, y, params);
+    }
+
+    landmark(x, y, level_height, levels, secondary_shape) {
+
+        push();
+        noStroke();
+        var elevation = (height * 0.5) / 3.5;
+        var params = {
+            'primary_mass': true,
+            'add_secondary': random([true, false]),
+            'accent_shape': secondary_shape,
+            'levels': levels,
+            'fancy_roof': true,
+            'roof_overhang': random(0, 4),
+            'roof_masses': random([1, 2]) * 2 - 1,
+            'dome_start': random(3 * PI / 4, PI),
+            'quad_ratio': random(1, 2),
+            'level_height': level_height,
+            'fill_color': color(this.pallette.landmark),
+        }
+        params.spire_height = params.accent_shape == 'quadrilateral' ? 0 : random(3, 20);
+        params.width_decrement = (150 - (150 / random([1, 1.5, 2]))) / (params.levels + 1);
+        params.width = params.width_decrement > 0 ? 150 : 60;
+        params.level_recursion = params.width_decrement < 0.2 ? 0 : 2;
+        params.roof_peak = params.width_decrement < 0.2 ? 0 : Math.floor(random(-1, 5));
+        params.roof_lift = params.roof_peak == 0 && params.width_decrement != 0 ? random([0, 1]) : 0;
+
+        x = x - (params.width / 2);
+        y = y - elevation;
+
+        this.building(width / 4 - (params.width / 2), this.horizon - elevation, params, secondary_shape);
+        pop()
+
     }
 
     building(x, y, params) {
