@@ -16,7 +16,6 @@ function setup() {
     var skyline = new Skyline(climate, seed);
     skyline.draw_skyline();
 
-    noLoop();
 }
 
 class Skyline {
@@ -368,7 +367,7 @@ class Skyline {
             'level_height': level_height,
             'fill_color': color(this.pallette.landmark),
         }
-        params.spire_height = params.accent_shape == 'quadrilateral' ? 0 : random(3, 20);
+        params.spire_height = params.accent_shape == 'quadrilateral' ? 0 : random(8, 20);
         params.width_decrement = (150 - (150 / random([1, 1.5, 2]))) / (params.levels + 1);
         params.width = params.width_decrement > 0 ? 150 : 60;
         params.level_recursion = params.width_decrement < 0.2 ? 0 : 2;
@@ -547,9 +546,12 @@ class Skyline {
         var y_offset = sin(start) * radius;
 
         var angle = TWO_PI / npoints;
-        for (var a = start; a < end; a += angle) {
+        for (var a = start; a < TWO_PI + (PI - start); a += angle) {
             var sx = x + cos(a) * radius;
             var sy = y + (sin(a) * radius) - y_offset;
+            if (a + angle >= TWO_PI + (PI - start)) {
+                sy += 0.15;
+            }
             vertex(sx, sy);
         }
     }
