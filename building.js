@@ -495,11 +495,14 @@ class Skyline {
             } else if (scale != 0) {
                  offset += roof_width / (scale * 2);
             }
+
+            var roof_height = roof_width / 2;
             if (params.accent_shape == 'dome') {
                 this.dome(rx + offset, y - peak_height, roof_width / 2, 100, params.dome_start);
             } else if (params.accent_shape == 'triangle') {
                 this.triangle(rx + offset, y - peak_height, roof_width / 2);
             } else if (params.accent_shape == 'quadrilateral') {
+                roof_height = roof_width / 20;
                 this.quadrilateral(rx + offset, y - peak_height, roof_width / 2, roof_width / 20, roof_width / (2 * params.quad_ratio));
             }
             endShape(CLOSE);
@@ -507,8 +510,8 @@ class Skyline {
             // spire
             if (params.spire_height) {
                 beginShape();
-                var spire_width = roof_width < 50 ?  roof_width / 10 : 5
-                this.triangle(rx + offset, y - peak_height, spire_width, (roof_width / 2) + params.spire_height);
+                var spire_width = roof_width < 30 ?  roof_width / 10 : 3
+                this.triangle(rx + offset, y - peak_height, spire_width, roof_height + params.spire_height);
                 endShape(CLOSE);
             }
         }
