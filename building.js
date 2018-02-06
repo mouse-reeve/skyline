@@ -47,7 +47,6 @@ class Skyline {
         }
         this.tree = [this.oak_tree];
         this.shrub = this.bush;
-        //this.pallette = pallettes.arctic;
         if (climate == 'tropical') {
             this.pallette.building = random(['#CB9C66', '#886F50', '#DBDDD5', '#C3CDC2', '#8898A7']);
             this.pallette.landmark = lerpColor(color(this.pallette.building), white, 0.2);
@@ -60,6 +59,7 @@ class Skyline {
                 waters.push(lerpColor(color(this.pallette.water[c]), color('#0084D6'), 0.2));
             }
             this.pallette.water = waters;
+            this.tree.push(this.palm_tree);
             this.foliage_level = 0.4;
             this.pallette.roof = this.split_complementary(this.pallette.landmark);
         } else if (climate == 'temperate') {
@@ -77,16 +77,18 @@ class Skyline {
             this.foliage_level = 0.6;
             this.pallette.roof = lerpColor(color(this.pallette.landmark), black, 0.2);
         } else if (climate == 'arid') {
-            this.tree = false;
+            this.tree = [this.palm_tree];
             this.shrub = false;
-            this.pallette.building = random(['#815F44', '#FFE7C1', '#866C5D', '#776849', '#FBC88F']);
+            this.foliage_level = 0.8;
+            this.pallette.building = random(['#FFE7C1', '#FBC88F']);
             this.pallette.landmark = lerpColor(color(this.pallette.building), white, 0.2);
             this.pallette.stone = lerpColor(color(this.pallette.building), color('#91715C'), 0.5);
             this.pallette.sky.blues = ['#A5C2D2', '#9ABED4', '#B9CCD2', '#6BA5CD', '#9ABDD3', '#CED6D8'];
             this.pallette.sky.accents = ['#FFCDC2', '#FFE0DF', '#F9F3E7', '#FFEFEE'];
-            this.pallette.roof = this.split_complementary(this.pallette.landmark);
+            var split = this.split_complementary(this.pallette.landmark);
+            this.pallette.roof = lerpColor(split, color(this.pallette.building), 0.2);
         }
-
+        console.log(this.pallette);
     }
 
     split_complementary(start_color) {
@@ -198,6 +200,63 @@ class Skyline {
         }
     }
 
+    palm_tree(x, y, plant_size, shadow) {
+        var lerp_value = 0.5 + (shadow || 0);
+        var fill_color = lerpColor(color(random(this.pallette.plants.greens)), color(this.pallette.building), lerp_value);
+
+        // trunk
+        var lean = random(-1.5, 1.5);
+        var trunk_width = random(0.05, 0.1) * plant_size;
+        push();
+        beginShape();
+        fill(lerpColor(color(this.pallette.trunk), color(this.pallette.building), lerp_value));
+        vertex(x, y);
+        vertex(x + (trunk_width * lean), y - plant_size * 1.2);
+        vertex(x + trunk_width + (trunk_width * lean), y - plant_size * 1.2);
+        vertex(x + trunk_width, y);
+        endShape(CLOSE);
+        pop();
+
+        var x0 = x + trunk_width + (trunk_width * lean);
+        var y0 = y - plant_size * 1.2;
+        var angle = PI / 7;
+        push();
+        fill(fill_color);
+        for (var a = 3 * PI / 4; a < 9 * PI / 4; a += angle) {
+            angle = PI / random(5, 10)
+            var frond_radius = plant_size * 0.7 * random(0.9, 1);
+            var angle_offset = random(0.8, 1.1) * (a < 3 * HALF_PI ? 1 : -1) * (PI / 7) / 2.5;
+            beginShape();
+            var sx = x0 + cos(a - (angle_offset / 2)) * frond_radius;
+            var sy = y0 + sin(a - (angle_offset / 2)) * frond_radius;
+
+            var hx = x0 + cos(a + (angle_offset / 2)) * (frond_radius * 0.7);
+            var hy = y0 + sin(a + (angle_offset / 2)) * (frond_radius * 0.7);
+
+            vertex(x0, y0);
+            vertex(sx, sy);
+            vertex(hx, hy);
+            endShape();
+        }
+        pop();
+        /*
+        for (var p = 0; p < 15; p++) {
+            var wo = (plant_size / 4) + random(plant_size / -8, plant_size / 8);
+            var xo = (plant_size / 8) + random(-0.4 * plant_size, 0.4 * plant_size);
+            var yo = plant_size + sin(random(0, TWO_PI)) * xo;
+            push();
+            fill(lerpColor(fill_color, black, random(0, 0.2)));
+            beginShape();
+            this.polygon(x + xo, y - yo, wo, 5);
+            endShape(CLOSE);
+            if (random() > 0.5) {
+                beginShape();
+                this.polygon(x - xo, y - yo, wo, 5);
+                endShape(CLOSE);
+            }
+            pop();
+        }*/
+    }
     pine_tree(x, y, plant_size, shadow) {
         var lerp_value = 0.6 + (shadow || 0);
         var fill_color = lerpColor(color(random(this.pallette.plants.greens)), color(this.pallette.building), lerp_value);
@@ -387,7 +446,7 @@ class Skyline {
         var elevation = (height * 0.5) / 3.5;
         var params = {
             'primary_mass': true,
-            'add_secondary': random([true, false]),
+            'add_secondary': random([true, false, false, false, false]),
             'accent_shape': secondary_shape,
             'levels': levels,
             'fancy_roof': true,
