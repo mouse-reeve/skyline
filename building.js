@@ -45,8 +45,8 @@ class Skyline {
             },
             'trunk': '#A1897F',
         }
-        this.tree = [this.oak_tree];
-        this.shrub = this.bush;
+        this.tree = [oak_tree];
+        this.shrub = bush;
         if (climate == 'tropical') {
             this.pallette.building = random(['#CB9C66', '#886F50', '#DBDDD5', '#C3CDC2', '#8898A7']);
             this.pallette.landmark = lerpColor(color(this.pallette.building), white, 0.2);
@@ -59,7 +59,7 @@ class Skyline {
                 waters.push(lerpColor(color(this.pallette.water[c]), color('#0084D6'), 0.2));
             }
             this.pallette.water = waters;
-            this.tree.push(this.palm_tree);
+            this.tree.push(palm_tree);
             this.foliage_level = 0.4;
             this.pallette.roof = this.split_complementary(this.pallette.landmark);
         } else if (climate == 'temperate') {
@@ -72,12 +72,12 @@ class Skyline {
             this.foliage_level = 0.3;
             this.pallette.roof = this.split_complementary(this.pallette.landmark);
         } else if (climate == 'arctic') {
-            this.tree = [this.poplar_tree, this.poplar_tree, this.oak_tree];
+            this.tree = [poplar_tree, poplar_tree, oak_tree];
             this.shrub = false;
             this.foliage_level = 0.6;
             this.pallette.roof = lerpColor(color(this.pallette.landmark), black, 0.2);
         } else if (climate == 'arid') {
-            this.tree = [this.palm_tree];
+            this.tree = [palm_tree];
             this.shrub = false;
             this.foliage_level = 0.8;
             this.pallette.building = random(['#FFE7C1', '#FBC88F']);
@@ -121,7 +121,7 @@ class Skyline {
             fill(lerpColor(color(this.pallette.beach[0]), color(this.pallette.stone), 0.8));
             noStroke();
             beginShape();
-            this.polygon(x, this.horizon + h - (block_width * 0.05), block_width, 4);
+            polygon(x, this.horizon + h - (block_width * 0.05), block_width, 4);
             endShape(CLOSE);
             pop();
         }
@@ -133,7 +133,7 @@ class Skyline {
             fill(lerpColor(color(random(this.pallette.beach)), color(this.pallette.stone), 0.9));
             noStroke();
             beginShape();
-            this.polygon(x + random(h / -2, h / 2), this.horizon + h - (block_width * 0.3) + random(h / -2, h / 2), block_width, random(9, 20));
+            polygon(x + random(h / -2, h / 2), this.horizon + h - (block_width * 0.3) + random(h / -2, h / 2), block_width, random(9, 20));
             endShape(CLOSE);
             pop();
         }
@@ -145,7 +145,7 @@ class Skyline {
             var h = base_height - (Math.abs(x - (width / 4)) * slope);
             var plant_size = Math.abs(h / 2 + 5) * random(3, 4);
             if (random() > this.foliage_level) {
-                random(this.tree).call(this, x, this.horizon + (h/2) - 2, plant_size);
+                random(this.tree)(x, this.horizon + (h/2) - 2, plant_size, 0, this.pallette);
             }
             if (this.shrub && random() > 0.7) {
                 this.shrub(x, this.horizon + (h/2) - 2, plant_size / 3);
@@ -153,222 +153,6 @@ class Skyline {
             }
         }
         pop()
-    }
-
-    oak_tree(x, y, plant_size, shadow) {
-        var lerp_value = 0.5 + (shadow || 0);
-        var fill_color = lerpColor(color(random(this.pallette.plants.greens)), color(this.pallette.building), lerp_value);
-
-        push();
-        fill(lerpColor(color(random(this.pallette.plants.greens)), color(this.pallette.building), lerp_value));
-        beginShape();
-        this.polygon(x + (plant_size / 8), y - plant_size, plant_size * 0.7, random(5, 7));
-        endShape(CLOSE);
-        pop();
-
-        var trunk_width = random(0.05, 0.2) * plant_size;
-        push();
-        beginShape();
-        fill(lerpColor(color(this.pallette.trunk), color(this.pallette.building), lerp_value));
-        vertex(x, y);
-        vertex(x, y - plant_size / 4);
-
-        vertex(x - 3, y - plant_size);
-        vertex(x + (trunk_width / 2), y - (plant_size / 2));
-        vertex(x + trunk_width + 3, y - plant_size);
-
-        vertex(x + trunk_width, y - plant_size / 4);
-        vertex(x + trunk_width, y);
-        endShape(CLOSE);
-        pop();
-
-        for (var p = 0; p < 15; p++) {
-            var wo = (plant_size / 4) + random(plant_size / -8, plant_size / 8);
-            var xo = (plant_size / 8) + random(-0.4 * plant_size, 0.4 * plant_size);
-            var yo = plant_size + sin(random(0, TWO_PI)) * xo;
-            push();
-            fill(lerpColor(fill_color, black, random(0, 0.2)));
-            beginShape();
-            this.polygon(x + xo, y - yo, wo, 5);
-            endShape(CLOSE);
-            if (random() > 0.5) {
-                beginShape();
-                this.polygon(x - xo, y - yo, wo, 5);
-                endShape(CLOSE);
-            }
-            pop();
-        }
-    }
-
-    palm_tree(x, y, plant_size, shadow) {
-        var lerp_value = 0.5 + (shadow || 0);
-        var fill_color = lerpColor(color(random(this.pallette.plants.greens)), color(this.pallette.building), lerp_value);
-
-        // trunk
-        var lean = random(-1.5, 1.5);
-        var trunk_width = random(0.05, 0.1) * plant_size;
-        push();
-        beginShape();
-        fill(lerpColor(color(this.pallette.trunk), color(this.pallette.building), lerp_value));
-        vertex(x, y);
-        vertex(x + (trunk_width * lean), y - plant_size * 1.2);
-        vertex(x + trunk_width + (trunk_width * lean), y - plant_size * 1.2);
-        vertex(x + trunk_width, y);
-        endShape(CLOSE);
-        pop();
-
-        var x0 = x + trunk_width + (trunk_width * lean);
-        var y0 = y - plant_size * 1.2;
-        var angle = PI / 7;
-        push();
-        fill(fill_color);
-        for (var a = 3 * PI / 4; a < 9 * PI / 4; a += angle) {
-            angle = PI / random(5, 10)
-            var frond_radius = plant_size * 0.7 * random(0.9, 1);
-            var angle_offset = random(0.8, 1.1) * (a < 3 * HALF_PI ? 1 : -1) * (PI / 7) / 2.5;
-            beginShape();
-            var sx = x0 + cos(a - (angle_offset / 2)) * frond_radius;
-            var sy = y0 + sin(a - (angle_offset / 2)) * frond_radius;
-
-            var hx = x0 + cos(a + (angle_offset / 2)) * (frond_radius * 0.7);
-            var hy = y0 + sin(a + (angle_offset / 2)) * (frond_radius * 0.7);
-
-            vertex(x0, y0);
-            vertex(sx, sy);
-            vertex(hx, hy);
-            endShape();
-        }
-        pop();
-        /*
-        for (var p = 0; p < 15; p++) {
-            var wo = (plant_size / 4) + random(plant_size / -8, plant_size / 8);
-            var xo = (plant_size / 8) + random(-0.4 * plant_size, 0.4 * plant_size);
-            var yo = plant_size + sin(random(0, TWO_PI)) * xo;
-            push();
-            fill(lerpColor(fill_color, black, random(0, 0.2)));
-            beginShape();
-            this.polygon(x + xo, y - yo, wo, 5);
-            endShape(CLOSE);
-            if (random() > 0.5) {
-                beginShape();
-                this.polygon(x - xo, y - yo, wo, 5);
-                endShape(CLOSE);
-            }
-            pop();
-        }*/
-    }
-    pine_tree(x, y, plant_size, shadow) {
-        var lerp_value = 0.6 + (shadow || 0);
-        var fill_color = lerpColor(color(random(this.pallette.plants.greens)), color(this.pallette.building), lerp_value);
-
-        var plant_height = plant_size * 2;
-
-        var trunk_width = random(0.05, 0.1) * plant_size;
-        push();
-        beginShape();
-        fill(lerpColor(color(this.pallette.trunk), color(this.pallette.building), lerp_value));
-        vertex(x, y);
-        vertex(x + (trunk_width / 2), y - plant_height);
-        vertex(x + trunk_width, y);
-        endShape(CLOSE);
-        pop();
-
-        var xo = x + (trunk_width / 2);
-        var branch = plant_height ** 0.4;
-        for (var p = plant_height * 0.95; p > 0; p -= branch * 0.8) {
-            var wo = p ** 0.7 + random(-1 * p ** 0.7 / 10, p ** 0.7 / 10);
-            var yo = y - plant_height + p;
-            push();
-            fill(lerpColor(fill_color, black, random(0, 0.2)));
-            beginShape();
-            vertex(xo - wo, yo);
-            vertex(xo, yo - (branch));
-            vertex(xo + wo, yo);
-            vertex(xo, yo + (branch / 5));
-            endShape(CLOSE);
-            pop();
-        }
-    }
-
-    poplar_tree(x, y, plant_size, shadow) {
-        var lerp_value = 0.5 + (shadow || 0);
-        var fill_color = lerpColor(color(random(this.pallette.plants.browns)), color(this.pallette.building), lerp_value);
-
-        // center foliage poly
-        push();
-        fill(lerpColor(fill_color, color(this.pallette.building), lerp_value));
-        beginShape();
-        this.polygon(x + (plant_size / 8), y - plant_size, plant_size * 0.4, random(5, 7));
-        endShape(CLOSE);
-        beginShape();
-        this.polygon(x + (plant_size / 8), y - (1.5 * plant_size), plant_size * 0.3, random(5, 7));
-        endShape(CLOSE);
-        pop();
-
-        // trunk
-        var trunk_width = random(0.05, 0.1) * plant_size;
-        push();
-        beginShape();
-        fill(lerpColor(color(this.pallette.trunk), color(this.pallette.building), lerp_value));
-        vertex(x, y);
-        vertex(x, y - plant_size / 4);
-
-        vertex(x - 3, y - plant_size);
-        vertex(x + (trunk_width / 2), y - (plant_size / 2));
-        vertex(x + trunk_width + 3, y - plant_size);
-
-        vertex(x + trunk_width, y - plant_size / 4);
-        vertex(x + trunk_width, y);
-        endShape(CLOSE);
-        pop();
-
-        // foliage
-        for (var p = 0; p < 45; p++) {
-            var wo = (plant_size / 16) + random(0, plant_size / 20);
-            var yo = (plant_size / 3) + (1.5 * random(0, plant_size));
-            var y_max = (plant_size / 3) + (1.5 * plant_size);
-            var xo = (plant_size / 8) + random(-0.3 * plant_size, 0.3 * plant_size) / (Math.abs((y_max / 2) - yo) ** 0.2);
-            push();
-            fill(lerpColor(fill_color, color(random(this.pallette.plants.browns)), random(0, 0.3)));
-            beginShape();
-            this.polygon(x + xo, y - yo, wo, 5);
-            endShape(CLOSE);
-            if (random() > 0.5) {
-                beginShape();
-                this.polygon(x - xo, y - yo, wo, 5);
-                endShape(CLOSE);
-            }
-            pop();
-        }
-    }
-
-    bush(x, y, plant_size) {
-        var fill_color = lerpColor(color(random(this.pallette.plants.greens)), color(this.pallette.building), 0.6);
-
-        push();
-        fill(fill_color);
-        beginShape();
-        this.polygon(x - (plant_size / 3), y - plant_size / 2, plant_size * 0.7, random(5, 7));
-        this.polygon(x + (plant_size / 3), y - plant_size / 2, plant_size * 0.7, random(5, 7));
-        endShape(CLOSE);
-        pop();
-
-        for (var p = 0; p < 15; p++) {
-            var wo = (plant_size / 4) + random(plant_size / -8, plant_size / 8);
-            var xo = random(-0.9 * plant_size, 0.9 * plant_size);
-            var yo = random(0.4 * plant_size, 0.8 * plant_size);
-            push();
-            fill(lerpColor(fill_color, color(random(this.pallette.plants.greens)), random(0, 0.3)));
-            beginShape();
-            this.polygon(x + xo, y - yo, wo, 5);
-            endShape(CLOSE);
-            if (random() > 0.5) {
-                beginShape();
-                this.polygon(x - xo, y - yo, wo, 5);
-                endShape(CLOSE);
-            }
-            pop();
-        }
     }
 
     add_buildings() {
@@ -402,7 +186,7 @@ class Skyline {
             var building_width = random(45, 65) + random([0, 0, 0, 0, 0, 0, 0, 100]) - layer ** 2;
             this.simple_building(i, this.horizon + h / 8, elevation + random(h - 5, h + 5), building_width, fill_color, secondary_shape);
             if (layer && random() > this.foliage_level ** 0.4) {
-                random(this.tree).call(this, i, this.horizon - (h * 0.7), 10 + (h / 4), layer ** 0.3 / 8);
+                random(this.tree)(i, this.horizon - (h * 0.7), 10 + (h / 4), layer ** 0.3 / 8, this.pallette);
             }
         }
         pop()
