@@ -96,7 +96,7 @@ class Skyline {
         var hsl = [color(start_color)._getHue(), color(start_color)._getSaturation(), color(start_color)._getLightness()];
         pop();
         colorMode(HSL, 100);
-        var end_color = color(((hsl[0] + random([20, 60])) % 100), hsl[1], hsl[2], 100);
+        var end_color = color(((hsl[0] + 20) % 100), hsl[1], hsl[2], 100);
         colorMode(RGB);
         push();
         return end_color;
@@ -148,8 +148,8 @@ class Skyline {
                 random(this.tree)(x, this.horizon + (h/2) - 2, plant_size, 0, this.pallette);
             }
             if (this.shrub && random() > 0.7) {
-                this.shrub(x, this.horizon + (h/2) - 2, plant_size / 3);
-                this.shrub(x + plant_size / 2, this.horizon + (h/2) - 2, plant_size / 3);
+                this.shrub(x, this.horizon + (h/2) - 2, plant_size / 3, this.pallette);
+                this.shrub(x + plant_size / 2, this.horizon + (h/2) - 2, plant_size / 3, this.pallette);
             }
         }
         pop()

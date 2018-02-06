@@ -1,4 +1,4 @@
-var oak_tree = function (x, y, plant_size, pallette) {
+var oak_tree = function (x, y, plant_size, shadow, pallette) {
     var lerp_value = 0.5 + (shadow || 0);
     var fill_color = lerpColor(color(random(pallette.plants.greens)), color(pallette.building), lerp_value);
 
@@ -45,7 +45,6 @@ var oak_tree = function (x, y, plant_size, pallette) {
 
 var palm_tree = function (x, y, plant_size, shadow, pallette) {
     var lerp_value = 0.5 + (shadow || 0);
-    console.log(pallette);
     var fill_color = lerpColor(color(random(pallette.plants.greens)), color(pallette.building), lerp_value);
 
     // trunk
@@ -66,7 +65,7 @@ var palm_tree = function (x, y, plant_size, shadow, pallette) {
     var angle = PI / 7;
     push();
     fill(fill_color);
-    for (var a = 3 * PI / 4; a < 9 * PI / 4; a += angle) {
+    for (var a = 3 * PI / 4; a < 9.5 * PI / 4; a += angle) {
         angle = PI / random(5, 10)
         var frond_radius = plant_size * 0.7 * random(0.9, 1);
         var angle_offset = random(0.8, 1.1) * (a < 3 * HALF_PI ? 1 : -1) * (PI / 7) / 2.5;
@@ -83,23 +82,6 @@ var palm_tree = function (x, y, plant_size, shadow, pallette) {
         endShape();
     }
     pop();
-    /*
-    for (var p = 0; p < 15; p++) {
-        var wo = (plant_size / 4) + random(plant_size / -8, plant_size / 8);
-        var xo = (plant_size / 8) + random(-0.4 * plant_size, 0.4 * plant_size);
-        var yo = plant_size + sin(random(0, TWO_PI)) * xo;
-        push();
-        fill(lerpColor(fill_color, black, random(0, 0.2)));
-        beginShape();
-        polygon(x + xo, y - yo, wo, 5);
-        endShape(CLOSE);
-        if (random() > 0.5) {
-            beginShape();
-            polygon(x - xo, y - yo, wo, 5);
-            endShape(CLOSE);
-        }
-        pop();
-    }*/
 }
 
 var pine_tree = function (x, y, plant_size, shadow, pallette) {
@@ -187,7 +169,7 @@ var poplar_tree = function (x, y, plant_size, shadow, pallette) {
     }
 }
 
-var bush = function (x, y, plant_size) {
+var bush = function (x, y, plant_size, pallette) {
     var fill_color = lerpColor(color(random(pallette.plants.greens)), color(pallette.building), 0.6);
 
     push();
