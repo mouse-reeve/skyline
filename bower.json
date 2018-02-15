@@ -1,6 +1,6 @@
 {
   "name": "map-generator",
-  "main": "maps.js",
+  "main": "skyline.min.js",
   "homepage": "https://github.com/mouse-reeve/maps",
   "authors": [
     "Mouse Reeve <mousereeve@riseup.net>"
