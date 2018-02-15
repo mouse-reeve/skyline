@@ -6,16 +6,9 @@ function setup() {
     var canvas = createCanvas(1165, 600);
     canvas.parent(container);
 
-    var param_string = window.location.search.substr(1).split('&');
-    var params = {};
-    for (var i = 0; i < param_string.length; i++) {
-        var pair = param_string[i].split('=');
-        params[pair[0]] = pair[1];
-    }
-    var seed = params.seed || Math.floor(Math.random() * 10000);
+    var seed = container.getAttribute('data-seed') || Math.floor(Math.random() * 10000);
     // options are: arctic, tropical, arid, temperate
-    var climate = params.climate || random(['arctic', 'tropical', 'arid', 'temperate']);
-    console.log(seed, climate);
+    var climate = container.getAttribute('data-climate') || random(['arctic', 'tropical', 'arid', 'temperate']);
 
     black = color(0);
     white = color(255);
@@ -84,7 +77,6 @@ class Skyline {
             this.pallette.sky.accents = ['#FFCDC2', '#FFE0DF', '#F9F3E7', '#FFEFEE'];
         }
         this.pallette.roof = lerpColor(color(this.pallette.landmark), black, 0.05);
-        console.log(this.pallette);
     }
 
     draw_skyline() {
